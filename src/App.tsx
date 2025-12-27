@@ -20,10 +20,13 @@ function App() {
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       <div className="max-w-3xl mx-auto px-4 py-12">
         {/* Header */}
-        <header className="mb-10 text-center">
-          <h1 className="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
-            VeraVox AI
-          </h1>
+        <header className="mb-10 text-center flex flex-col items-center">
+          <img
+            src="/veravox-ai.jpg"
+            alt="VeraVox AI"
+            className="h-28 w-auto mb-2 rounded-2xl shadow-sm mix-blend-multiply"
+          />
+          <h1 className="sr-only">VeraVox AI</h1>
           <p className="text-slate-600 text-lg font-medium">
             Turn customer feedback into professional responses in seconds.
           </p>

@@ -500,3 +500,68 @@ We edited `src/components/HistoryList.tsx` and inserted this block:
 
 ### Summary
 We didn't need a complex plugin. We used the browser's built-in tools (`navigator`) and placed a button inside our existing list loop. Simple, efficient, powerful.
+
+---
+
+## 13. Feature Spotlight: The Success Toast (Pop-up)
+
+You asked: *"How did you make that pop-up appear and adding logic to it?"*
+
+This is a classic React pattern called **"Ephemeral State"** (State that only lasts for a short time).
+
+### The Logic Breakdown
+
+#### 1. The State (`copiedId`)
+```typescript
+const [copiedId, setCopiedId] = useState<string | null>(null);
+```
+*   **Logic:** We don't just want to know *if* something was copied. We need to know **WHICH ONE** was copied.
+*   **Value:**
+    *   `null`: Nothing is copied.
+    *   `"abc-123"`: The item with ID "abc-123" was just copied.
+
+#### 2. The Timer (`setTimeout`)
+```typescript
+const handleCopy = (text: string, id: string) => {
+  navigator.clipboard.writeText(text); // 1. Copy text
+  setCopiedId(id);                     // 2. Show the "Copied!" state
+  
+  setTimeout(() => {
+    setCopiedId(null);                 // 3. Wait 2 seconds, then Hide it
+  }, 2000);
+};
+```
+*   **Terminology**: **Asynchronous Callback**.
+*   `setTimeout` says: "Hey browser, set a timer for 2000 milliseconds (2 seconds). When the alarm rings, run this function to reset the state back to null."
+*   **Result:** The user sees the feedback, and then it cleans itself up automatically.
+
+#### 3. The Conditional Button
+```typescript
+{copiedId === item.id ? ( ...Copied Icon... ) : ( ...Copy Icon... )}
+```
+*   **Logic:** This is a checklist for every single button.
+    *   "Is the generic `copiedId` variable equal to **MY** specific `item.id`?"
+    *   **Yes?** -> Turn Green and say "Copied!"
+    *   **No?** -> Stay Grey and say "Copy".
+
+#### 4. The Toast (The Pop-up)
+```typescript
+{copiedId && (
+  <div className="fixed bottom-6 animate-bounce ...">
+    Response copied to clipboard!
+  </div>
+)}
+```
+*   **Logic (Short-circuit Evaluation)**:
+    *   If `copiedId` is `null` (falsey) -> React ignores the rest. Nothing renders.
+    *   If `copiedId` has a string (truthy) -> React renders the div.
+*   **Styling**:
+    *   `fixed`: Stick to the screen (don't scroll with the page).
+    *   `bottom-6`: 6 units from the bottom.
+    *   `z-50`: Force it to sit *on top* of everything else.
+
+### Summary
+We created a temporary "memory" of which item was clicked. We used that memory to:
+1.  Change the specific button's color.
+2.  Show the global pop-up message.
+3.  Set a timer to erase that memory after 2 seconds.
