@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  limit,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import type { HistoryItem } from "../types";
 
@@ -8,7 +14,11 @@ export default function HistoryList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, "history"), orderBy("createdAt", "desc"));
+    const q = query(
+      collection(db, "history"),
+      orderBy("createdAt", "desc"),
+      limit(20)
+    );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const items: HistoryItem[] = snapshot.docs.map((doc) => ({

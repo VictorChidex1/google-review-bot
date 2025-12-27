@@ -1,7 +1,9 @@
 import "./App.css";
+import Navbar from "./components/Navbar";
 import HistoryList from "./components/HistoryList";
 import ReviewForm from "./components/ReviewForm";
 import ReviewResult from "./components/ReviewResult";
+import Footer from "./components/Footer";
 import { useReviewGenerator } from "./hooks/useReviewGenerator";
 
 function App() {
@@ -18,36 +20,34 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      <div className="max-w-3xl mx-auto px-4 py-12">
-        {/* Header */}
-        <header className="mb-10 text-center flex flex-col items-center">
-          <img
-            src="/veravox-ai.jpg"
-            alt="VeraVox AI"
-            className="h-28 w-auto mb-2 rounded-2xl shadow-sm mix-blend-multiply"
-          />
-          <h1 className="sr-only">VeraVox AI</h1>
-          <p className="text-slate-600 text-lg font-medium">
-            Turn customer feedback into professional responses in seconds.
-          </p>
-        </header>
+      <Navbar />
 
+      {/* Added pt-24 to account for fixed navbar */}
+      <div className="max-w-3xl mx-auto px-4 py-12 pt-24 flex flex-col min-h-screen">
         {/* Main Content Grid */}
-        <div className="grid gap-8">
-          <ReviewForm
-            reviewText={reviewText}
-            setReviewText={setReviewText}
-            businessType={businessType}
-            setBusinessType={setBusinessType}
-            onSubmit={generateReply}
-            loading={loading}
-            error={error}
-          />
+        <div className="grid gap-8 flex-grow">
+          {/* Scroll Anchor ID */}
+          <div id="review-form">
+            <ReviewForm
+              reviewText={reviewText}
+              setReviewText={setReviewText}
+              businessType={businessType}
+              setBusinessType={setBusinessType}
+              onSubmit={generateReply}
+              loading={loading}
+              error={error}
+            />
+          </div>
 
           <ReviewResult reply={generatedReply} />
 
-          <HistoryList />
+          {/* Scroll Anchor ID */}
+          <div id="history-list">
+            <HistoryList />
+          </div>
         </div>
+
+        <Footer />
       </div>
     </div>
   );
