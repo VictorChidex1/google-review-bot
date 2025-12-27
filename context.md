@@ -13,11 +13,27 @@ We are building a **Micro-SaaS** that helps local businesses automatically gener
 ## 🛠 Tech Stack (Strict)
 
 - **Frontend:** React (Vite) + TypeScript.
-- **Styling:** Tailwind CSS (use standard utility classes).
+- **Styling:** Tailwind CSS (Version 3.4 - Stable).
 - **Backend:** Vercel Serverless Functions (Node.js / TypeScript).
   - _Note:_ We are NOT using Firebase Cloud Functions (too expensive).
 - **Database:** Firebase Firestore (Web SDK).
 - **AI Engine:** Google Gemini Pro API (`@google/generative-ai`).
+
+---
+
+## 🎨 Design System (Strict)
+
+**Theme:** "Growth & Profit" (Trustworthy, Expensive, Professional).
+**NO** generic AI purple/neon colors.
+
+- **Primary Color:** Emerald Green (`emerald-600` / `#059669`)
+  - _Usage:_ CTA Buttons, Active States, Success Messages.
+  - _Hover:_ `emerald-700` (`#047857`).
+- **Secondary/Dark:** Deep Slate (`slate-900` / `#0f172a`)
+  - _Usage:_ Headings, Heavy Text, Dark Backgrounds.
+- **Light/Background:** Slate 50 (`slate-50` / `#f8fafc`)
+  - _Usage:_ Main App Background.
+- **Card Background:** White (`#ffffff`).
 
 ---
 
@@ -46,7 +62,8 @@ We are building a **Micro-SaaS** that helps local businesses automatically gener
 3.  **Environment Variables:**
     - Backend: Uses `process.env.GEMINI_API_KEY`.
     - Frontend: Uses `import.meta.env` for Firebase config (if needed).
-4.  **Styling:** Mobile-first. Use Tailwind for layout.
+4.  **Styling:** \* Mobile-first.
+    - Use Semantic names if configured (e.g., `bg-primary`) or strict utility classes (`bg-emerald-600`).
 
 ---
 
@@ -61,4 +78,5 @@ We are building a **Micro-SaaS** that helps local businesses automatically gener
 
 - [x] Backend API is built and tested.
 - [x] Database connection is configured.
+- [x] **Design System Defined:** Emerald Green + Deep Slate.
 - [ ] **Current Task:** Building the React UI (Forms, Buttons, Display Area).
