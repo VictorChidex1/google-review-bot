@@ -130,3 +130,78 @@ This is where the user actually clicks things.
 3. **Backend** asks Google Gemini for a reply and sends it back.
 4. **`App.tsx`** shows you the reply AND saves it to `firebase.ts` (Database).
 5. **`HistoryList.tsx`** notices the database changed and updates the list at the bottom.
+
+---
+
+## 5. Deep Dive: `src/types.ts` (Line-by-Line)
+
+You asked for a breakdown of `types.ts` like a newbie. Here is exactly what is happening in that file, line by line.
+
+### Part 1: The Input (`Review`)
+
+```typescript
+1: export interface Review {
+2:   reviewText: string;
+3:   businessType: string;
+4: }
+```
+
+*   **Line 1: `export interface Review {`**
+    *   `export`: "Make this available to other files." Without this, `App.tsx` couldn't use it.
+    *   `interface`: "I am defining a shape." Think of this like a cookie cutter. We are creating a cookie cutter named `Review`.
+    *   `Review`: The name of our shape. Capitalized because it's a type (convention).
+    *   `{`: Opens the definition.
+*   **Line 2: `reviewText: string;`**
+    *   "Any object that claims to be a `Review` MUST have a property called `reviewText`."
+    *   `: string`: "And that property MUST be text (letters/words)." NOT a number, NOT a date, only text.
+*   **Line 3: `businessType: string;`**
+    *   Same here. It MUST have a `businessType`, and it MUST be text.
+*   **Line 4: `}`**
+    *   Closes the definition.
+
+**Summary:** If you try to create a `Review` variable but forget `businessType`, TypeScript will yell at you with a red squiggly line. This saves you from "undefined" errors later.
+
+### Part 2: The Output (`ReviewResponse`)
+
+```typescript
+6: export interface ReviewResponse {
+7:   reply: string;
+8: }
+```
+
+*   **Line 6:** We are exporting a new shape called `ReviewResponse`.
+*   **Line 7:** "When we get an answer back from the AI, it will be an object with one thing inside: `reply`, which is text."
+*   **Why do we need this?** When we do `fetch('/api/generate')`, the computer just sees a blob of data. By saying `as ReviewResponse`, we tell the computer: "Trust me, inside that blob is a `reply` string."
+
+### Part 3: The Archive (`HistoryItem`)
+
+```typescript
+10: export interface HistoryItem {
+11:   id?: string;
+12:   originalReview: string;
+13:   businessType: string;
+14:   generatedReply: string;
+15:   createdAt: Date;
+16: }
+```
+
+*   **Line 10:** Defines the shape for items we save in our History list.
+*   **Line 11: `id?: string;`**
+    *   **The `?` is special!**
+    *   It means "Optional".
+    *   *Translation:* "A `HistoryItem` MIGHT have an `id`, or it might not."
+    *   *Why?* When we first create the item to send to Firebase, it doesn't have an ID yet. Firebase *gives* it an ID after it's saved. So sometimes it's there, sometimes it's not.
+*   **Line 12-14:** These are required text fields.
+*   **Line 15: `createdAt: Date;`**
+    *   This field MUST be a `Date` object (time). It cannot be just a string like "tomorrow". It has to be a real Javascript time object.
+*   **Line 16:** Closing bracket.
+
+### Why did we allow `id` to be optional (`?`)?
+If we made it required (`id: string`), we would have a "Chicken and Egg" problem.
+1.  We want to save a new item.
+2.  We try to make a `HistoryItem` object.
+3.  TypeScript asks: "Where is the ID?"
+4.  We say: "I don't have one yet! Firebase hasn't given it to me!"
+5.  TypeScript says: "Too bad, it's required." -> **Error.**
+
+By adding `?`, TypeScript says: "Okay, you can create this object without an ID for now."
