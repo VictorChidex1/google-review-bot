@@ -22,7 +22,7 @@ function App() {
         {/* Header */}
         <header className="mb-10 text-center">
           <h1 className="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
-            Google Review Bot
+            VeraVox AI
           </h1>
           <p className="text-slate-600 text-lg font-medium">
             Turn customer feedback into professional responses in seconds.
