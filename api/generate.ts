@@ -1,6 +1,9 @@
-// api/generate.ts
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import dotenv from "dotenv";
+
+// Load environment variables manually for local development
+dotenv.config({ path: ".env.local" });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // 1. CORS Setup (Allows your frontend to talk to this backend)
@@ -14,10 +17,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // 2. Security Check
     const apiKey = process.env.GEMINI_API_KEY;
+    console.log("Debug: API Key present?", !!apiKey);
     if (!apiKey) {
-      throw new Error("GEMINI_API_KEY is missing in environment variables");
+      console.error("Error: GEMINI_API_KEY is missing");
+      return res.status(500).json({
+        error: "Server Configuration Error: GEMINI_API_KEY is missing",
+      });
     }
 
     // 3. Setup Gemini
@@ -25,7 +31,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     // 4. Parse the Incoming Data
-    // We expect the frontend to send a JSON body
     const { reviewText, businessType } = req.body || {};
 
     if (!reviewText || !businessType) {
@@ -34,7 +39,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .json({ error: "Missing reviewText or businessType" });
     }
 
-    // 5. The Prompt (The Brain)
     const prompt = `
       You are the owner of a ${businessType}. 
       Write a warm, professional, short reply to this customer review.

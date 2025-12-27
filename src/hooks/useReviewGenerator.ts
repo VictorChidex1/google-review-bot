@@ -27,7 +27,8 @@ export function useReviewGenerator() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to generate reply");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to generate reply");
       }
 
       const data: ReviewResponse = await response.json();
@@ -44,8 +45,8 @@ export function useReviewGenerator() {
       } catch (e) {
         console.error("Error adding document: ", e);
       }
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
+    } catch (err: any) {
+      setError(err.message || "Something went wrong. Please try again.");
       console.error(err);
     } finally {
       setLoading(false);
