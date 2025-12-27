@@ -23,6 +23,14 @@ export default function HistoryList() {
     return () => unsubscribe();
   }, []);
 
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
   if (loading) {
     return (
       <div className="text-center py-4 text-slate-500">Loading history...</div>
@@ -36,7 +44,7 @@ export default function HistoryList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative">
       <h2 className="text-2xl font-bold text-slate-900 mb-6">
         Recent Activity
       </h2>
@@ -64,9 +72,87 @@ export default function HistoryList() {
             <div className="bg-slate-50 p-3 rounded-lg text-slate-800 text-sm font-medium border border-slate-100">
               {item.generatedReply}
             </div>
+            <div className="mt-2 flex justify-end">
+              <button
+                onClick={() => handleCopy(item.generatedReply, item.id || "")}
+                className={`text-xs font-bold flex items-center gap-1 px-3 py-1.5 rounded-md transition-all ${
+                  copiedId === item.id
+                    ? "bg-emerald-100 text-emerald-700"
+                    : "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                }`}
+              >
+                {copiedId === item.id ? (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect
+                        x="9"
+                        y="9"
+                        width="13"
+                        height="13"
+                        rx="2"
+                        ry="2"
+                      ></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         ))}
       </div>
+
+      {/* Success Popup (Toast) */}
+      {copiedId && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 animate-bounce z-50">
+          <div className="bg-emerald-500 rounded-full p-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <span className="font-semibold text-sm">
+            Response copied to clipboard!
+          </span>
+        </div>
+      )}
     </div>
   );
 }
