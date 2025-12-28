@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { auth } from "../firebase";
@@ -21,19 +22,12 @@ export default function Navbar() {
     setIsDropdownOpen(false);
   };
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-40 border-b border-slate-200 px-4 py-3">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           {/* Left: Logo */}
-          <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <img
               src="/veravox-logo.webp"
               alt="Logo"
@@ -42,22 +36,16 @@ export default function Navbar() {
             <span className="font-bold text-slate-900 hidden sm:block">
               VeraVox AI
             </span>
-          </div>
+          </Link>
 
           {/* Right: Actions */}
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => scrollToSection("review-form")}
+            <Link
+              to="/app"
               className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors hidden md:block"
             >
-              New Reply
-            </button>
-            <button
-              onClick={() => scrollToSection("history-list")}
-              className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors hidden md:block"
-            >
-              History
-            </button>
+              App
+            </Link>
 
             <div className="h-4 w-px bg-slate-200 hidden md:block"></div>
 

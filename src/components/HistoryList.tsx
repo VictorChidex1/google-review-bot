@@ -5,8 +5,10 @@ import {
   orderBy,
   onSnapshot,
   limit,
+  where,
 } from "firebase/firestore";
-import { db } from "../firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { db, auth } from "../firebase";
 import type { HistoryItem } from "../types";
 
 export default function HistoryList() {
@@ -14,23 +16,33 @@ export default function HistoryList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(
-      collection(db, "history"),
-      orderBy("createdAt", "desc"),
-      limit(20)
-    );
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const q = query(
+          collection(db, "history"),
+          where("userId", "==", user.uid),
+          orderBy("createdAt", "desc"),
+          limit(20)
+        );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const items: HistoryItem[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate(), // Convert Firestore Timestamp to Date
-      })) as HistoryItem[];
-      setHistory(items);
-      setLoading(false);
+        const unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+          const items: HistoryItem[] = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+            createdAt: doc.data().createdAt?.toDate(),
+          })) as HistoryItem[];
+          setHistory(items);
+          setLoading(false);
+        });
+
+        return () => unsubscribeSnapshot();
+      } else {
+        setHistory([]);
+        setLoading(false);
+      }
     });
 
-    return () => unsubscribe();
+    return () => unsubscribeAuth();
   }, []);
 
   const [copiedId, setCopiedId] = useState<string | null>(null);

@@ -9,6 +9,7 @@ export interface ReviewResponse {
 
 export interface HistoryItem {
   id?: string;
+  userId?: string;
   originalReview: string;
   businessType: string;
   generatedReply: string;

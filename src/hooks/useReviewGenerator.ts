@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { collection, addDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 import type { ReviewResponse } from "../types";
 
 export function useReviewGenerator() {
@@ -37,6 +37,7 @@ export function useReviewGenerator() {
       // Save to Firestore
       try {
         await addDoc(collection(db, "history"), {
+          userId: auth.currentUser?.uid,
           originalReview: reviewText,
           businessType,
           generatedReply: data.reply,
