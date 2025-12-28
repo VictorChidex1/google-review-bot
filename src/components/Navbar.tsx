@@ -33,9 +33,7 @@ export default function Navbar() {
               alt="Logo"
               className="w-8 h-8 rounded-lg"
             />
-            <span className="font-bold text-slate-900 hidden sm:block">
-              VeraVox AI
-            </span>
+            <span className="font-bold text-slate-900 block">VeraVox AI</span>
           </Link>
 
           {/* Right: Actions */}

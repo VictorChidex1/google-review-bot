@@ -967,3 +967,61 @@ You asked for the Hero image implementation.
 - **`absolute inset-0` (Overlay)**: We created an invisible box that sits _on top_ of the image.
 - **`bg-gradient-to-t`**: A subtle shadow at the bottom of the image. This makes it look "embedded" rather than just pasted.
 - **`hover:scale-[1.01]`**: A micro-interaction. When your mouse hovers, the image grows by 1%. It feels "alive."
+
+---
+
+## 19. Phase 9: The "Hero Card Overlay" Design (Deep Dive)
+
+You asked: _"How did you implement the 'Card Overlay' Style? Explain the logic."_
+
+We moved away from the "Background Image" style to the "Apple/Stripe" card style.
+
+### A. The Concept: "Z-Index Stacking"
+
+Think of HTML like layers of paper on a desk.
+
+1.  **Layer 0 (Bottom)**: The Background Image (`veravox-hero.jpg`).
+2.  **Layer 1 (Middle)**: The Overlay (Dark tint to make text readable).
+3.  **Layer 2 (Top)**: The Text (Headline & Buttons).
+
+If we didn't force the order, the image might sit _on top_ of the text, hiding it.
+
+### B. The Code Logic: `HeroSection.tsx`
+
+```tsx
+<div className="relative max-w-[1400px] ... overflow-hidden ...">
+
+  {/* LAYER 0: The Image */}
+  <div className="absolute inset-0 z-0">
+    <img src="/veravox-hero.jpg" ... />
+
+    {/* LAYER 1: The Dark Tint */}
+    <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-[2px]"></div>
+  </div>
+
+  {/* LAYER 2: The Text */}
+  <div className="relative z-10 max-w-4xl ...">
+    <h1>Turn Google Reviews...</h1>
+  </div>
+
+</div>
+```
+
+#### Line-by-Line Breakdown:
+
+1.  **`relative` (Parent)**: "I am the frame." All `absolute` children will measure themselves against _me_, not the whole screen.
+2.  **`absolute inset-0`**: "Stretch to fill the frame completely." Top: 0, Bottom: 0, Left: 0, Right: 0.
+3.  **`z-0` vs `z-10`**:
+    - `z-0`: Sit at the back.
+    - `z-10`: Sit at the front.
+    - **Logic**: The text (`z-10`) is numerically higher than the image (`z-0`), so it wins.
+4.  **`bg-slate-900/80`**:
+    - `slate-900`: Very dark blue/grey.
+    - `/80`: 80% Opacity. It's like putting on sunglasses.
+    - **result**: The text is white, passing through the "sunglasses", making it sharp.
+
+### C. The Layout Logic
+
+- **`max-w-[1400px]`**: We allow the card to be very wide, but we stop it from touching the edges on huge monitors.
+- **`rounded-[2.5rem]`**: Extreme rounding (40px) gives it that modern, friendly "Card" feel.
+- **`backdrop-blur-[2px]`**: A tiny blur on the image layer. This creates "depth of field"—like a professional camera focusing on the text and blurring the background slightly.
