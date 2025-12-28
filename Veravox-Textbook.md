@@ -1108,4 +1108,110 @@ We made it "smart"—it now navigates to a new location.
 <Link to="/login">Sign In</Link>
 ```
 
+### E. The "Back to Home" Button (Absolute Positioning)
+
+You asked: _"How did you implement the Back Arrow? Explain the CSS logic."_
+
+To place a button exactly in the corner of a card _without_ messing up the text alignment, we use **Absolute Positioning**.
+
+```tsx
+// 1. The Parent (The Card)
+<div className="relative ...">
+  // 2. The Button (The Arrow)
+  <Link to="/" className="absolute top-4 left-4 ...">
+    <ArrowIcon />
+  </Link>
+  // 3. The Content (The Text)
+  <div className="p-8">...</div>
+</div>
+```
+
+- **`relative` (Parent)**: Acts as the "fence". It tells the browser: "Measure coordinates starting from _my_ top-left corner, not the screen's."
+- **`absolute` (Child)**: Takes the element _out of the normal flow_. It floats above everything else.
+
+- **`top-4 left-4`**: "Pin this element 16px (1rem) from the top and 16px from the left."
+
+#### Line-by-Line Breakdown:
+
+1.  **`relative` (On the Parent Card)**: This is the most crucial part.
+
+    - **Logic**: It tells the browser: _"Hey, any children inside me that use `absolute` should measure their position starting from MY corners, not the computer screen's corners."_
+    - **Without this**: The arrow might fly up to the top-left of your entire browser window!
+
+2.  **`absolute` (On the Link/Button)**:
+
+    - **Logic**: _"Take me out of the normal flow. I don't take up space anymore. I float."_
+
+3.  **`top-4 left-4`**:
+    - **Logic**: _"Pin me exactly 16 pixels (1rem) from the Top and 16px from the Left of my parent."_
+
+**Why this matters**: If we didn't use `absolute`, the arrow would sit _above_ the headline, pushing all the text down. By using `absolute`, the arrow floats in the corner, and the text stays centered perfectly.
+
 This ensures that the "Sign In" button respects web standards—you can right-click it, open in new tab, etc.
+
+---
+
+## 21. Phase 11: Persisting User Data (Firestore)
+
+You asked: _"How did you save user data to Firestore? Explain the logic and the difference between Auth and Database."_
+
+### A. The Big Concept: Auth vs. Database
+
+It is a common newbie confusion to think "Firebase Auth" and "Firestore Database" are the same. They are not.
+
+1.  **Firebase Auth**: Ideally just an "ID Card issuer". It holds the email, password, and a unique ID (`uid`). It **cannot** hold extra data like "Premium Status", "Job Title", or "History".
+2.  **Firestore Database**: This is a filing cabinet. We create a folder called `users` and inside it, we calculate a file for each person.
+
+**The Goal**: When someone gets their ID Card (Sign Up), we immediately open a file for them in the cabinet (Firestore).
+
+### B. The Code Logic (`setDoc`)
+
+We used a function called `setDoc`. Here is the translation:
+
+```typescript
+// 1. IMPORT THE TOOLS
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+
+// 2. THE ACTION
+await setDoc(doc(db, "users", user.uid), {
+  uid: user.uid,
+  email: user.email,
+  displayName: name,
+  createdAt: serverTimestamp(),
+});
+```
+
+#### Line-by-Line Breakdown:
+
+1.  **`doc(db, "users", user.uid)`**:
+
+    - **Logic**: "I want to point to a specific file."
+    - **Path**: `db` (The Database) -> `users` (The Drawer) -> `user.uid` (The File Name).
+    - **Crucial Detail**: We use the `uid` from Auth as the _Filename_. This links the ID Card to the File perfectly. File "123" belongs to User "123".
+
+2.  **`setDoc(..., { ... })`**:
+
+    - **Logic**: "Write this data to that file. If the file doesn't exist, create it. If it does, overwrite it (unless we use merge)."
+
+3.  **`serverTimestamp()`**:
+    - **Logic**: "Don't use the user's computer time (which might be wrong). Use Google's Server Time." This ensures accuracy.
+
+### C. The "Google Sign In" Safety Check
+
+For Google Sign In, we had to be careful. A user might sign in with Google today, and then again tomorrow. We **don't** want to overwrite their "Created At" date tomorrow.
+
+**The Logic:**
+
+1.  **Check**: Does a file named `users/123` already exist?
+2.  **If NO**: Create it (Write the data).
+3.  **If YES**: Do nothing (Just log them in).
+
+```typescript
+const userDocRef = doc(db, "users", user.uid);
+const userDoc = await getDoc(userDocRef);
+
+if (!userDoc.exists()) {
+  // Only write if they are new!
+  await setDoc(userDocRef, { ... });
+}
+```
