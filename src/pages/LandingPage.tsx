@@ -1,54 +1,15 @@
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import HeroSection from "../components/HeroSection";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
       <Navbar />
 
-      <main className="flex-grow pt-24">
-        {/* HERO SECTION */}
-        <section className="max-w-5xl mx-auto px-4 py-20 text-center">
-          <div className="mb-6 inline-block px-4 py-1.5 bg-emerald-50 border border-emerald-100 rounded-full">
-            <span className="text-emerald-700 font-medium text-sm">
-              ✨ The #1 AI Tool for Small Businesses
-            </span>
-          </div>
-          <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900 mb-6 tracking-tight leading-tight">
-            Turn Google Reviews into <br className="hidden md:block" />
-            <span className="text-emerald-600">Loyal Customers</span>
-          </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
-            The AI-powered assistant that writes professional, empathetic, and
-            SEO-friendly replies for busy business owners in seconds.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-            <Link
-              to="/login"
-              className="w-full sm:w-auto px-8 py-4 bg-emerald-600 text-white font-bold rounded-xl text-lg hover:bg-emerald-700 transition-all shadow-lg hover:shadow-emerald-200"
-            >
-              Start Generating Free
-            </Link>
-            <a
-              href="#features"
-              className="w-full sm:w-auto px-8 py-4 bg-white text-slate-700 border border-slate-200 font-bold rounded-xl text-lg hover:bg-slate-50 transition-all"
-            >
-              How it Works
-            </a>
-          </div>
-
-          {/* Hero Image */}
-          <div className="relative mx-auto max-w-5xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform hover:scale-[1.01] transition-transform duration-500">
-            <img
-              src="/veravox-hero.jpg"
-              alt="Dashboard Preview"
-              className="w-full h-auto"
-            />
-            {/* Optional Overlay/Gradient if needed */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent pointer-events-none"></div>
-          </div>
-        </section>
+      <main className="flex-grow">
+        <HeroSection />
 
         {/* TRUST BAR */}
         <section className="border-y border-slate-100 bg-slate-50 py-10">
