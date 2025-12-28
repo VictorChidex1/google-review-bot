@@ -109,12 +109,12 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <button
-                onClick={() => setIsAuthModalOpen(true)}
+              <Link
+                to="/login"
                 className="bg-emerald-600 text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-200"
               >
                 Sign In
-              </button>
+              </Link>
             )}
           </div>
         </div>

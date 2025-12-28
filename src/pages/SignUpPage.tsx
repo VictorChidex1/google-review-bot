@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  createUserWithEmailAndPassword,
   signInWithPopup,
-  signInWithEmailAndPassword,
+  updateProfile,
   onAuthStateChanged,
 } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const navigate = useNavigate();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // New state for eye toggle
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -36,21 +38,28 @@ export default function LoginPage() {
     }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      // Update the user's display name
+      if (name) {
+        await updateProfile(userCredential.user, {
+          displayName: name,
+        });
+      }
+
       // Auth state change will trigger redirect
     } catch (err: any) {
-      // Improve error messages
-      if (err.code === "auth/invalid-credential") {
-        setError("Invalid email or password.");
-      } else {
-        setError(err.message);
-      }
+      setError(err.message);
       setLoading(false);
     }
   };
@@ -68,14 +77,13 @@ export default function LoginPage() {
               />
             </Link>
             <h2 className="text-2xl font-bold text-slate-900 mb-2">
-              Welcome Back
+              Create Account
             </h2>
             <p className="text-slate-500 text-sm">
-              Sign in to access your business reviews.
+              Start generating professional reviews today.
             </p>
           </div>
 
-          {/* Google Button */}
           <button
             onClick={handleGoogleSignIn}
             disabled={loading}
@@ -86,7 +94,7 @@ export default function LoginPage() {
               alt="Google"
               className="w-5 h-5"
             />
-            Sign in with Google
+            Sign up with Google
           </button>
 
           <div className="relative mb-6">
@@ -95,13 +103,26 @@ export default function LoginPage() {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-2 bg-white text-slate-500">
-                Or continue with
+                Or sign up with email
               </span>
             </div>
           </div>
 
-          {/* Login Form */}
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleSignUp} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Full Name
+              </label>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all placeholder:text-slate-300"
+                placeholder="John Doe"
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 Email Address
@@ -115,18 +136,11 @@ export default function LoginPage() {
                 placeholder="you@example.com"
               />
             </div>
+
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-sm font-medium text-slate-700">
-                  Password
-                </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-xs font-medium text-emerald-600 hover:text-emerald-700 hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Password
+              </label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -135,6 +149,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all placeholder:text-slate-300 pr-10"
                   placeholder="••••••••"
+                  minLength={6}
                 />
                 <button
                   type="button"
@@ -187,18 +202,17 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full bg-emerald-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-200"
             >
-              {loading ? "Signing In..." : "Sign In"}
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
-          {/* Link to Signup */}
           <div className="mt-6 text-center text-sm text-slate-500">
-            Don't have an account?{" "}
+            Already have an account?{" "}
             <Link
-              to="/signup"
+              to="/login"
               className="text-emerald-600 font-bold hover:underline"
             >
-              Sign up
+              Log in
             </Link>
           </div>
         </div>

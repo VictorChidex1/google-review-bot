@@ -1025,3 +1025,87 @@ If we didn't force the order, the image might sit _on top_ of the text, hiding i
 - **`max-w-[1400px]`**: We allow the card to be very wide, but we stop it from touching the edges on huge monitors.
 - **`rounded-[2.5rem]`**: Extreme rounding (40px) gives it that modern, friendly "Card" feel.
 - **`backdrop-blur-[2px]`**: A tiny blur on the image layer. This creates "depth of field"—like a professional camera focusing on the text and blurring the background slightly.
+
+---
+
+## 20. Phase 10: Authentication Expansion (Deep Dive)
+
+You asked: _"How did you split the Login page and add the 'Eye' icon? Explain the logic."_
+
+We transformed the single `AuthModal` into a full **Authentication Suite** with dedicated pages.
+
+### A. The Architecture: "Pages" over "Modals"
+
+Originally, we had a pop-up modal. This is good for quick access but bad for:
+
+1.  **Deep Linking**: You can't send someone a link to `veravox.ai/reset-password` if it's just a pop-up.
+2.  **Focus**: A dedicated page (`/login`, `/signup`) removes distractions so the user focuses on the task.
+
+We updated `App.tsx` (The Switchboard) to handle these new "rooms":
+
+```tsx
+<Routes>
+  <Route path="/login" element={<LoginPage />} />
+  <Route path="/signup" element={<SignUpPage />} />
+  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+</Routes>
+```
+
+### B. The Logic: Password Visibility (The "Eye" Icon)
+
+You asked how we "toggle" the password visibility. It's a simple state trick.
+
+```tsx
+// 1. The State
+const [showPassword, setShowPassword] = useState(false);
+
+// 2. The Toggle
+<input
+  // 3. The Condition
+  type={showPassword ? "text" : "password"}
+/>
+
+<button onClick={() => setShowPassword(!showPassword)}>
+  {/* If TRUE show EyeOff, if FALSE show Eye */}
+  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+</button>
+```
+
+- **`useState(false)`**: By default, the password is hidden (`type="password"` -> dots `••••`).
+- **`onClick`**: When you click the icon, we flip the state to `true`.
+- **`type={showPassword ? "text" : "password"}`**:
+  - If `true`: The input becomes `type="text"`, so the browser shows the letters.
+  - If `false`: The input becomes `type="password"`, so the browser shows dots.
+
+### C. The Forgot Password Logic
+
+Using Firebase, this is surprisingly robust with just one function.
+
+```tsx
+import { sendPasswordResetEmail } from "firebase/auth";
+
+await sendPasswordResetEmail(auth, email);
+```
+
+- **Logic**: We ask the user for their email. Firebase checks if that user exists.
+  - **If Yes**: Firebase sends a secure, time-limited link to that email. When clicked, it opens a Firebase-hosted page to set a new password.
+  - **If No**: We catch the error (`auth/user-not-found`) and tell the user.
+
+### D. The Navbar Refactor
+
+The "Sign In" button was previously "dumb"—it just opened a local pop-up.
+We made it "smart"—it now navigates to a new location.
+
+**Old Code:**
+
+```tsx
+<button onClick={() => setIsModalOpen(true)}>Sign In</button>
+```
+
+**New Code:**
+
+```tsx
+<Link to="/login">Sign In</Link>
+```
+
+This ensures that the "Sign In" button respects web standards—you can right-click it, open in new tab, etc.
