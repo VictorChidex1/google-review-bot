@@ -25,7 +25,10 @@ export default function HeroSection() {
         {/* 3. CONTENT (On Top) */}
         <div className="relative z-10 max-w-4xl mx-auto px-6 py-20">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-emerald-300 text-sm font-medium mb-8 backdrop-blur-md animate-fade-in-up">
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20
+           text-emerald-300 text-sm font-medium mb-8 backdrop-blur-md animate-fade-in-up"
+          >
             <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span>The #1 AI Tool for Small Businesses</span>
           </div>
