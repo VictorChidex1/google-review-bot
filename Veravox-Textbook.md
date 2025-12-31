@@ -1489,3 +1489,73 @@ className={`... ${
 ```
 
 - **Result**: When you click a question, it "lights up" (Grey background, Blue border), signalling to the user: "This is what you are reading right now."
+
+---
+
+## 27. Phase 16: FAQ Aesthetics Upgraded (The Premium Touch) ☁️
+
+You asked: _"How can we make this look less 'Bootstrap' and more 'SaaS'?"_
+
+We implemented the **"Floating Card"** aesthetic.
+
+### A. The "Physicality" Logic (Tactile Design) 👆
+
+Standard web elements are flat. Premium elements feel like they can be touched.
+
+```tsx
+/* Idle State */
+border border-slate-200 bg-white
+
+/* Hover State */
+hover:shadow-md
+hover:-translate-y-1
+hover:border-blue-100
+```
+
+1.  **`-translate-y-1`**: This moves the element UP by 4 pixels.
+2.  **`shadow-md`**: We increase the shadow size.
+3.  **The Result**: The card feels light. When you hover, it "lifts" to meet your mouse. It invites the click.
+
+### B. The "Active Anchor" (Left Border) ⚓️
+
+When a question is open, we need to show it is **Dominant**.
+
+```tsx
+/* Active State */
+border-l-4 border-l-blue-500 scale-[1.02]
+```
+
+- **`border-l-4`**: A thick blue line on the LEFT. This is a common pattern in documentation (like Stripe or Notion) to mark "Active Reading Area."
+- **`scale-[1.02]`**: We enlarge the entire card by 2%. It subtly screams "I am important!"
+
+### C. The "Chevron Physics" (Smooth Rotation) 🔄
+
+Don't swap icons! Rotate them.
+
+```tsx
+/* Bad Way */
+{
+  isOpen ? <UpIcon /> : <DownIcon />;
+}
+
+/* Premium Way */
+<ChevronDown
+  className={`transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+/>;
+```
+
+- **Why?**: Swapping icons flickers. Rotating mimics a real physical hinge. It feels greased and expensive.
+
+### D. The "Atmosphere" (Subtle Texture) 🕸️
+
+We added a background that isn't just plain white.
+
+```tsx
+/* Dot Pattern */
+bg-[radial-gradient(#3b82f6_1px,transparent_1px)]
+[background-size:16px_16px]
+opacity-[0.03]
+```
+
+- **Logic**: A 3% opacity blue dot every 16 pixels.
+- **Effect**: It breaks up the "White Void." It provides a sense of scale and texture without being visible enough to distract.
