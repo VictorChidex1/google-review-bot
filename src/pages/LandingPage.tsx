@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import HeroSection from "../components/HeroSection";
 import TrustBar from "../components/TrustBar";
 import FeaturesGrid from "../components/FeaturesGrid";
+import FAQ from "../components/FAQ";
 
 export default function LandingPage() {
   return (
@@ -18,6 +19,9 @@ export default function LandingPage() {
 
         {/* FEATURES GRID */}
         <FeaturesGrid />
+
+        {/* FAQ SECTION */}
+        <FAQ />
 
         {/* CTA */}
         <section className="bg-slate-900 text-white py-24">
