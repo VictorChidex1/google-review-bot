@@ -1,22 +1,40 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Check if user is an Admin (has a doc in 'users' with isAdmin: true)
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
     function isAdmin() {
       return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    match /history/{docId} {
-      // 1. You can see your own data OR if you are Admin
-      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
-      // 2. You can only create if you tag it with YOUR ID
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+    // Rules for 'history' collection
+    match /history/{document} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAdmin();
     }
-    
+
+    // Rules for 'users' collection
     match /users/{userId} {
-      allow read, write: if request.auth.uid == userId || isAdmin();
+      allow read: if request.auth.uid == userId || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Rules for 'contact_messages' collection
+    // PUBLIC-FACING: Allowing create so anyone can contact.
+    match /contact_messages/{messageId} {
+      allow create: if true; // Public can create
+      allow read, update, delete: if isAdmin(); // Only admins can manage
     }
   }
 }

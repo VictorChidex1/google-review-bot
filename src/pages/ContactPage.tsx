@@ -1,3 +1,4 @@
+import { useState, type FormEvent, type ChangeEvent } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import {
@@ -8,25 +9,97 @@ import {
   CheckCircle2,
   Users,
   HelpCircle,
+  Send,
+  Loader2,
+  Check,
 } from "lucide-react";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setIsSuccess(false);
+
+    if (!formData.name || !formData.email || !formData.message) {
+      setError("Please fill in all fields.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "contact_messages"), {
+        ...formData,
+        createdAt: serverTimestamp(),
+        status: "unread",
+      });
+      setIsSuccess(true);
+      setError(null);
+      setFormData({ name: "", email: "", message: "" }); // Clear form
+
+      // Reset success message after 5 seconds
+      setTimeout(() => setIsSuccess(false), 5000);
+    } catch (err) {
+      console.error("Error sending message:", err);
+      setError("Failed to send message. Please try again.");
+      setIsSuccess(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
       <Navbar />
 
-      <main className="pt-32 pb-24">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-slate-900 text-slate-900 mb-6">
-              Get in Touch
-            </h1>
-            <p className="text-xl text-slate-500">
-              Have questions, feedback, or need support? We'd love to hear from
-              you.
-            </p>
+      <main>
+        {/* Dark Hero Section */}
+        <div className="bg-slate-900 pt-32 pb-24 relative overflow-hidden">
+          {/* Ambient Background Effects */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-4xl opacity-20 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500 rounded-full blur-[128px]" />
+            <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-emerald-500 rounded-full blur-[128px]" />
           </div>
 
+          <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+            {/* Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-sm font-medium mb-8">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              We're here to help
+            </div>
+
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+              Get in{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+                Touch
+              </span>
+            </h1>
+            <p className="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
+              Have a question or want to learn more about VeraVox? We'd love to
+              hear from you.
+            </p>
+          </div>
+        </div>
+
+        <div className="max-w-4xl mx-auto px-4 -mt-12 relative z-20">
           <div className="grid md:grid-cols-2 gap-12 items-start">
             {/* Contact Info */}
             <div className="space-y-8">
@@ -155,8 +228,8 @@ export default function ContactPage() {
             </div>
 
             {/* Simple Form */}
-            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-              <form className="space-y-6">
+            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm relative">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label
                     htmlFor="name"
@@ -167,7 +240,12 @@ export default function ContactPage() {
                   <input
                     type="text"
                     id="name"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    disabled={isLoading || isSuccess}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                     placeholder="John Doe"
                   />
                 </div>
@@ -182,7 +260,12 @@ export default function ContactPage() {
                   <input
                     type="email"
                     id="email"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    disabled={isLoading || isSuccess}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                     placeholder="john@example.com"
                   />
                 </div>
@@ -196,17 +279,50 @@ export default function ContactPage() {
                   </label>
                   <textarea
                     id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
                     rows={4}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
+                    disabled={isLoading || isSuccess}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none disabled:opacity-60 disabled:cursor-not-allowed"
                     placeholder="How can we help you?"
                   ></textarea>
                 </div>
 
+                {error && !isSuccess && (
+                  <div className="text-red-500 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100">
+                    {error}
+                  </div>
+                )}
+
+                {isSuccess && (
+                  <div className="text-emerald-600 text-sm font-medium bg-emerald-50 p-3 rounded-lg border border-emerald-100 flex items-center gap-2">
+                    <Check className="w-4 h-4" /> Message sent successfully!
+                  </div>
+                )}
+
                 <button
-                  type="button"
-                  className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 duration-200"
+                  type="submit"
+                  disabled={isLoading || isSuccess}
+                  className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  Send Message
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Sending...
+                    </>
+                  ) : isSuccess ? (
+                    <>
+                      <Check className="w-5 h-5" />
+                      Sent!
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      Send Message
+                    </>
+                  )}
                 </button>
               </form>
             </div>
