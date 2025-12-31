@@ -1,16 +1,51 @@
 export default function TrustBar() {
+  const logos = [
+    { name: "RestaurantPro", icon: "🍽️" },
+    { name: "CafeOne", icon: "☕" },
+    { name: "BistroX", icon: "🍷" },
+    { name: "HotelLuxe", icon: "🏨" },
+    { name: "NovLuma", icon: "💡" },
+    { name: "UrbanEats", icon: "🍔" },
+    { name: "SpaSerenity", icon: "💆" },
+    { name: "TechFix", icon: "🔧" },
+  ];
+
   return (
-    <section className="border-y border-slate-100 bg-slate-50 py-10">
-      <p className="text-center text-slate-400 font-medium text-sm uppercase tracking-widest mb-6">
+    <section className="border-y border-slate-100 bg-slate-50 py-10 overflow-hidden relative">
+      <p className="text-center text-slate-400 font-medium text-sm uppercase tracking-widest mb-8">
         Trusted by Forward-Thinking Businesses
       </p>
-      <div className="flex justify-center flex-wrap gap-8 opacity-40 grayscale">
-        {/* Placeholders for logos */}
-        <span className="text-xl font-bold">Resteraunt</span>
-        <span className="text-xl font-bold">CafeOne</span>
-        <span className="text-xl font-bold">BistroX</span>
-        <span className="text-xl font-bold">HotelPro</span>
-        <span className="text-xl font-bold">NovLuma</span>
+
+      {/* Gradient Masks for Fade Effect */}
+      <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none"></div>
+      <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none"></div>
+
+      <div className="flex top-0 left-0 w-[200%] animate-marquee hover:[animation-play-state:paused]">
+        {/* Original Set */}
+        <div className="flex justify-around min-w-[50%] gap-12 px-12 opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0">
+          {logos.map((logo, index) => (
+            <div
+              key={`logo-1-${index}`}
+              className="flex items-center gap-2 text-xl font-bold text-slate-800"
+            >
+              <span className="text-2xl">{logo.icon}</span>
+              <span>{logo.name}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Duplicate Set (For Infinite Loop) */}
+        <div className="flex justify-around min-w-[50%] gap-12 px-12 opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0">
+          {logos.map((logo, index) => (
+            <div
+              key={`logo-2-${index}`}
+              className="flex items-center gap-2 text-xl font-bold text-slate-800"
+            >
+              <span className="text-2xl">{logo.icon}</span>
+              <span>{logo.name}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
