@@ -1427,3 +1427,65 @@ blur-3xl
 4.  **`pointer-events-none`**: **Critical!** This ensures the user can't "click" the fog. Clicks pass right through it to the buttons/text below.
 
 **Summary**: We layered **Structure** (Borders), **Emotion** (Gradients), and **Atmosphere** (Blobs) to create a section that feels expensive and modern.
+
+---
+
+## 26. Phase 16: FAQ Section Live (The Accordion Logic)
+
+You asked: _"How does the FAQ expand smoothly? What logic is controlling the open/close?"_
+
+### A. The "Accordion" Problem 🪗
+
+An "Accordion" is a UI component where clicking a header reveals hidden content. It's trickier than it looks because of **Animations**.
+
+If you just transition `height` from `0` to `auto`, CSS transitions **fail**. The browser cannot animate to `auto`.
+
+### B. The Solution: CSS Grid "Fr" Trick 📏
+
+The modern way to animate height is using `grid-template-rows`.
+
+```tsx
+<div
+  className={`grid transition-all duration-300 ${
+    isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+  }`}
+>
+  <div className="overflow-hidden">{/* Content */}</div>
+</div>
+```
+
+- **`grid-rows-[0fr]`**: The row has a fractional size of 0. It is fully collapsed.
+- **`grid-rows-[1fr]`**: The row takes up "1 fraction" of the space (which means "all needed space" in this context).
+- **Result**: The browser CAN animate numbers (0 to 1). So the content slides open smoothly. Note: You MUST have `overflow-hidden` on the inner container for this to work.
+
+### C. The State Logic 🧠
+
+We need to know _which_ item is open.
+
+```tsx
+const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+const toggleFAQ = (index: number) => {
+  setOpenIndex(openIndex === index ? null : index);
+};
+```
+
+1.  **`null`**: No question is open.
+2.  **`number`**: Question #X is open.
+3.  **The Toggle Logic**:
+    - If I click Question 2, and `openIndex` is already 2 -> Set to `null` (Close it).
+    - If I click Question 2, and `openIndex` is 5 -> Set to 2 (Close 5, Open 2).
+
+### D. The Dynamic Styles 🎨
+
+We use a **Ternary Operator** to change the look when active.
+
+```tsx
+className={`... ${
+  openIndex === index
+    ? "bg-slate-50 shadow-md border-blue-200"
+    : "bg-white hover:border-blue-200"
+}`}
+```
+
+- **Result**: When you click a question, it "lights up" (Grey background, Blue border), signalling to the user: "This is what you are reading right now."

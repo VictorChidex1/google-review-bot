@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, HelpCircle } from "lucide-react";
+import { ChevronDown, HelpCircle } from "lucide-react";
 
 const faqs = [
   {
@@ -37,12 +37,15 @@ export default function FAQ() {
   };
 
   return (
-    <section id="faq" className="py-24 bg-white">
-      <div className="max-w-4xl mx-auto px-4">
+    <section id="faq" className="py-24 bg-slate-50 relative overflow-hidden">
+      {/* Subtle Dot Pattern Background */}
+      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+      <div className="max-w-4xl mx-auto px-4 relative z-10">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center p-2 bg-blue-50 rounded-full mb-4">
-            <HelpCircle className="w-6 h-6 text-blue-600" />
+          <div className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-sm mb-6 border border-slate-100">
+            <HelpCircle className="w-8 h-8 text-blue-600" />
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
             Frequently Asked Questions
@@ -57,24 +60,30 @@ export default function FAQ() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className={`border border-slate-200 rounded-2xl transition-all duration-300 ${
+              className={`border rounded-2xl transition-all duration-300 group ${
                 openIndex === index
-                  ? "bg-slate-50 shadow-md border-blue-200"
-                  : "bg-white hover:border-blue-200"
+                  ? "bg-white shadow-lg border-blue-100 border-l-4 border-l-blue-500 scale-[1.02]"
+                  : "bg-white border-slate-200 hover:shadow-md hover:-translate-y-1 hover:border-blue-100"
               }`}
             >
               <button
                 onClick={() => toggleFAQ(index)}
                 className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
               >
-                <span className="text-lg font-semibold text-slate-900">
+                <span
+                  className={`text-lg font-semibold transition-colors ${
+                    openIndex === index ? "text-blue-700" : "text-slate-900"
+                  }`}
+                >
                   {faq.question}
                 </span>
-                {openIndex === index ? (
-                  <ChevronUp className="w-5 h-5 text-blue-600" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-slate-400" />
-                )}
+                <ChevronDown
+                  className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${
+                    openIndex === index
+                      ? "rotate-180 text-blue-600"
+                      : "group-hover:text-blue-500"
+                  }`}
+                />
               </button>
               <div
                 className={`grid transition-all duration-300 ease-in-out ${
@@ -84,7 +93,9 @@ export default function FAQ() {
                 }`}
               >
                 <div className="overflow-hidden px-6">
-                  <p className="text-slate-600 leading-relaxed">{faq.answer}</p>
+                  <p className="text-slate-600 leading-relaxed border-t border-slate-50 pt-4">
+                    {faq.answer}
+                  </p>
                 </div>
               </div>
             </div>
