@@ -1281,3 +1281,37 @@ This is the engine of the car.
 ### C. The Results
 
 By combining **Geometry** (The Double List) with **Physics** (The CSS Animation), we create an optical illusion of an infinite scrolling world. This is a standard technique used by top-tier tech companies.
+
+---
+
+## 23. Phase 13: Mobile Marquee Fixed Correctly (Advanced Responsiveness)
+
+You asked: _"Why did the logos crash into each other on mobile? How did `w-max` fix it?"_
+
+### A. The Crash: "Percentage Math" Failure 💥
+
+In the first version, we used `w-[200%]`. This means "Make the container 200% of the **SCREEN WIDTH**."
+
+- **On Desktop (1920px)**: 200% = **3840px**.
+  - The logos take up about 1500px.
+  - 3840px > 1500px. **Plenty of space.** No crash.
+- **On Mobile (375px)**: 200% = **750px**.
+  - The logos still need 1500px to sit next to each other.
+  - 750px < 1500px. **CRASH!** 🚗💥🚙
+  - The browser tried to shove 1500px of content into a 750px box, causing them to overlap and "cluster."
+
+### B. The Solution: "Content Math" (`w-max`) 🛡️
+
+I changed the width from `w-[200%]` (Screen-based) to `w-max` (Content-based).
+
+- **`w-max` (max-content)**: This tells the browser: "I don't care about the screen size. Make the box **exactly as wide as the logos inside it**."
+- If the logos need 1500px, the box becomes 1500px.
+- If the logos need 3000px, the box becomes 3000px.
+
+Now, the container is **always** big enough to hold the logos without squishing, regardless of whether you are on an iPhone or a giant Monitor.
+
+### C. The Perfect Mobile Loop
+
+1.  **Container Width**: 1500px (Calculated by `w-max`).
+2.  **Animation**: `translateX(-50%)` moves it by 750px.
+3.  **The Result**: We still move exactly _one full list length_, preserving the infinite illusion, but now with **Zero Collision** guaranteed.
