@@ -1215,3 +1215,69 @@ if (!userDoc.exists()) {
   await setDoc(userDocRef, { ... });
 }
 ```
+
+---
+
+## 22. Phase 12: Infinite Marquee Fixed (Advanced CSS)
+
+You asked: _"How did you fix the scrolling so it loops forever? Explain the code."_
+
+### A. The "Magic Trick" (The Logic) 🎩
+
+Imagine you have a toy train track. If it's a straight line, the train eventually falls off the edge.
+To make it "infinite", you need a loop. But in web design, we don't have circles. We have rectangles.
+
+**The Solution: The Double List Strategy.**
+
+1.  **List A**: [Logo 1, Logo 2, Logo 3]
+2.  **List B**: [Logo 1, Logo 2, Logo 3] (Exact Duplicate)
+
+We place them side-by-side: `[List A][List B]`
+
+**The Animation**:
+
+1.  We start looking at **List A**.
+2.  We smoothly slide the camera to the right until we are looking at **List B**.
+3.  **The Trick**: Distinctly at the _exact moment_ List A disappears and we are fully looking at List B... we **instantly** teleport the camera back to List A.
+4.  Because List A and List B are identical, the human eye cannot see the teleportation. It looks like one infinite road.
+
+### B. The Code Implementation
+
+#### 1. The CSS Keyframes (`index.css`)
+
+This is the engine of the car.
+
+```css
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  } /* Start at 0 */
+  100% {
+    transform: translateX(-50%);
+  } /* Move Left by 50% */
+}
+```
+
+- **`translateX(-50%)`**: Why 50% and not 100%?
+  - Because our container holds TWO lists (200% width).
+  - Moving it by 50% means we have moved exactly _one full list length_.
+  - Once we hit -50%, the browser resets to 0% automatically (loop), which is the exact same visual position.
+
+#### 2. The Container (`TrustBar.tsx`)
+
+```tsx
+<div className="flex w-[200%] animate-marquee">
+  {/* List 1 */}
+  <div className="w-[50%]">...Logos...</div>
+
+  {/* List 2 (The Clone) */}
+  <div className="w-[50%]">...Logos...</div>
+</div>
+```
+
+- **`w-[200%]`**: The container is twice as wide as the screen to fit both lists.
+- **`animate-marquee`**: This tells it to start the engine (Run the CSS animation).
+
+### C. The Results
+
+By combining **Geometry** (The Double List) with **Physics** (The CSS Animation), we create an optical illusion of an infinite scrolling world. This is a standard technique used by top-tier tech companies.
