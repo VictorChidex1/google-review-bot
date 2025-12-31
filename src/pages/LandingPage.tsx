@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HeroSection from "../components/HeroSection";
 import TrustBar from "../components/TrustBar";
+import FeaturesGrid from "../components/FeaturesGrid";
 
 export default function LandingPage() {
   return (
@@ -16,40 +17,7 @@ export default function LandingPage() {
         <TrustBar />
 
         {/* FEATURES GRID */}
-        <section id="features" className="max-w-6xl mx-auto px-4 py-24">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-8 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-6">
-                <span className="text-2xl">🧠</span>
-              </div>
-              <h3 className="text-xl font-bold mb-3">Smart Sentiment</h3>
-              <p className="text-slate-500 leading-relaxed">
-                Our AI instantly detects if a customer is happy, angry, or
-                neutral, and crafts the perfect psychological response.
-              </p>
-            </div>
-            <div className="p-8 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center mb-6">
-                <span className="text-2xl">🎭</span>
-              </div>
-              <h3 className="text-xl font-bold mb-3">Custom Tones</h3>
-              <p className="text-slate-500 leading-relaxed">
-                Choose between "Professional CEO", "Friendly Neighbor", or
-                "Empathetic Support" styles to match your brand.
-              </p>
-            </div>
-            <div className="p-8 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mb-6">
-                <span className="text-2xl">⚡</span>
-              </div>
-              <h3 className="text-xl font-bold mb-3">Instant Copy</h3>
-              <p className="text-slate-500 leading-relaxed">
-                Generate, review, and copy to clipboard in under 5 seconds. Get
-                back to running your business.
-              </p>
-            </div>
-          </div>
-        </section>
+        <FeaturesGrid />
 
         {/* CTA */}
         <section className="bg-slate-900 text-white py-24">
