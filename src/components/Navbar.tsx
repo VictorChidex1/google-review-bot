@@ -8,7 +8,6 @@ import {
   Menu,
   X,
   LogOut,
-  User as UserIcon,
   Settings,
   LayoutDashboard,
   Coffee,
@@ -27,7 +26,6 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const location = useLocation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -71,6 +69,7 @@ export default function Navbar() {
   const navLinks = [
     { name: "Features", href: "/#features" },
     { name: "Pricing", href: "/#pricing" },
+    { name: "Docs", href: "/docs" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
