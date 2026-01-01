@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
+import {
+  Outlet,
+  NavLink,
+  useNavigate,
+  useLocation,
+  Link,
+} from "react-router-dom";
 import {
   LayoutDashboard,
   Zap,
@@ -82,14 +88,17 @@ export default function DashboardLayout() {
       >
         {/* Logo Section */}
         <div className="h-16 flex items-center px-6 border-b border-slate-800">
-          <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
+          <Link
+            to="/"
+            className="flex items-center gap-2 font-bold text-xl tracking-tight hover:opacity-90 transition-opacity"
+          >
             <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center text-white">
               <Zap className="w-5 h-5 fill-current" />
             </div>
             <span>
               VeraVox<span className="text-emerald-400">AI</span>
             </span>
-          </div>
+          </Link>
           <button
             onClick={() => setMobileMenuOpen(false)}
             className="ml-auto lg:hidden text-slate-400 hover:text-white"
