@@ -215,7 +215,7 @@ export default function Navbar() {
                     Log in
                   </Link>
                   <Link
-                    to="/register"
+                    to="/signup"
                     className="bg-slate-900 text-white text-sm font-bold px-5 py-2.5 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200/50 hover:shadow-xl hover:-translate-y-0.5"
                   >
                     Get Started
