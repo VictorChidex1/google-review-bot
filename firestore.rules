@@ -31,10 +31,20 @@ service cloud.firestore {
     }
 
     // Rules for 'contact_messages' collection
-    // PUBLIC-FACING: Allowing create so anyone can contact.
     match /contact_messages/{messageId} {
       allow create: if true; // Public can create
-      allow read, update, delete: if isAdmin(); // Only admins can manage
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Rules for 'user_limits' collection
+    match /user_limits/{userId} {
+      // READ: Users can check "Am I over the limit?"
+      allow read: if request.auth.uid == userId || isAdmin();
+      
+      // WRITE: LOCKED 🔒
+      // Only the Backend (Admin SDK) can write to this collection.
+      // Users cannot reset their own limits.
+      allow write: if false; 
     }
   }
 }

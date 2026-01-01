@@ -27,3 +27,7 @@ dist-ssr
 # Documentation
 
 
+
+# Security
+serviceAccountKey.json
+*.pem

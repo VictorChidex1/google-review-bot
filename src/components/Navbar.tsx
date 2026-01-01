@@ -1,19 +1,45 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import type { User } from "firebase/auth";
+import { Link, useLocation } from "react-router-dom";
+import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { auth } from "../firebase";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Menu,
+  X,
+  LogOut,
+  User as UserIcon,
+  Settings,
+  LayoutDashboard,
+  Coffee,
+} from "lucide-react";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
-    return () => unsubscribe();
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      unsubscribe();
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const handleSignOut = async () => {
@@ -22,190 +48,241 @@ export default function Navbar() {
     setIsMobileMenuOpen(false);
   };
 
+  const navLinks = [
+    { name: "Features", href: "/#features" },
+    { name: "Pricing", href: "/#pricing" }, // Assuming you have an ID for pricing
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ];
+
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-40 border-b border-slate-200 px-4 py-3">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          {/* Left: Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <img
-              src="/veravox-logo.webp"
-              alt="Logo"
-              className="w-8 h-8 rounded-lg"
-            />
-            <span className="font-bold text-slate-900 block">VeraVox AI</span>
-          </Link>
-
-          {/* Right: Actions (Desktop) */}
-          <div className="hidden md:flex items-center gap-4">
-            <Link
-              to="/app"
-              className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors"
-            >
-              App
-            </Link>
-
-            <div className="h-4 w-px bg-slate-200"></div>
-
-            <a
-              href="https://www.buymeacoffee.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-slate-400 hover:text-yellow-500 transition-colors"
-              title="Buy me a coffee"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                <line x1="6" y1="1" x2="6" y2="4"></line>
-                <line x1="10" y1="1" x2="10" y2="4"></line>
-                <line x1="14" y1="1" x2="14" y2="4"></line>
-              </svg>
-            </a>
-
-            {user ? (
-              <div className="relative">
-                <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="w-9 h-9 rounded-full overflow-hidden border-2 border-emerald-100 focus:outline-none focus:border-emerald-500 transition-colors"
-                >
-                  <img
-                    src={
-                      user.photoURL ||
-                      `https://ui-avatars.com/api/?name=${user.email}&background=059669&color=fff`
-                    }
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-
-                {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-1 animate-fade-in-up">
-                    <div className="px-4 py-2 border-b border-slate-50">
-                      <p className="text-xs font-bold text-slate-900 truncate">
-                        {user.displayName || "User"}
-                      </p>
-                      <p className="text-xs text-slate-500 truncate">
-                        {user.email}
-                      </p>
-                    </div>
-                    <button
-                      onClick={handleSignOut}
-                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <Link
-                to="/login"
-                className="bg-emerald-600 text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-200"
-              >
-                Login
-              </Link>
-            )}
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
-          >
-            {isMobileMenuOpen ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-              </svg>
-            )}
-          </button>
-        </div>
-
-        {/* Mobile Menu Dropdown */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-slate-200 shadow-xl animate-fade-in-up p-4 flex flex-col gap-4">
-            <Link
-              to="/app"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="text-base font-medium text-slate-700 hover:text-emerald-600"
-            >
-              Launch App
-            </Link>
-            <div className="h-px bg-slate-100 w-full"></div>
-            {user ? (
-              <>
-                <div className="flex items-center gap-3">
-                  <img
-                    src={
-                      user.photoURL ||
-                      `https://ui-avatars.com/api/?name=${user.email}&background=059669&color=fff`
-                    }
-                    alt="Profile"
-                    className="w-10 h-10 rounded-full"
-                  />
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">
-                      {user.displayName || "User"}
-                    </p>
-                    <p className="text-xs text-slate-500">{user.email}</p>
-                  </div>
-                </div>
-                <button
-                  onClick={handleSignOut}
-                  className="w-full text-left text-sm font-bold text-red-600"
-                >
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <Link
-                to="/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full bg-emerald-600 text-white text-center font-bold py-3 rounded-xl shadow-lg shadow-emerald-200"
-              >
-                Login
-              </Link>
-            )}
-          </div>
+      <nav
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out border-b",
+          isScrolled
+            ? "bg-white/80 backdrop-blur-md border-slate-200/50 py-3 shadow-sm"
+            : "bg-white/0 border-transparent py-5"
         )}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2 group">
+              <div className="relative">
+                <div className="absolute inset-0 bg-emerald-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity" />
+                <img
+                  src="/veravox-logo.webp"
+                  alt="VeraVox Logo"
+                  className="w-9 h-9 rounded-lg relative z-10 shadow-sm"
+                />
+              </div>
+              <span className="font-bold text-xl text-slate-900 tracking-tight">
+                VeraVox<span className="text-emerald-600">.ai</span>
+              </span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-8">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors"
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+
+            {/* Actions (Desktop) */}
+            <div className="hidden md:flex items-center gap-4">
+              {/* Buy Me A Coffee */}
+              <a
+                href="https://www.buymeacoffee.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 text-slate-400 hover:text-yellow-500 hover:bg-yellow-50 rounded-full transition-all"
+                title="Buy me a coffee"
+              >
+                <Coffee className="w-5 h-5" />
+              </a>
+
+              <div className="h-5 w-px bg-slate-200" />
+
+              {user ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="flex items-center gap-2 p-1 pr-3 rounded-full border border-slate-200 hover:border-emerald-200 hover:bg-slate-50 transition-all group"
+                  >
+                    <img
+                      src={
+                        user.photoURL ||
+                        `https://ui-avatars.com/api/?name=${user.email}&background=059669&color=fff`
+                      }
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full object-cover ring-2 ring-white"
+                    />
+                    <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900 max-w-[100px] truncate">
+                      {user.displayName?.split(" ")[0] || "Account"}
+                    </span>
+                  </button>
+
+                  <AnimatePresence>
+                    {isDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden"
+                      >
+                        <div className="p-4 border-b border-slate-50 bg-slate-50/50">
+                          <p className="text-sm font-bold text-slate-900 truncate">
+                            {user.displayName || "User"}
+                          </p>
+                          <p className="text-xs text-slate-500 truncate">
+                            {user.email}
+                          </p>
+                        </div>
+                        <div className="p-2">
+                          <Link
+                            to="/app"
+                            className="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-colors"
+                          >
+                            <LayoutDashboard className="w-4 h-4 text-emerald-600" />
+                            Dashboard
+                          </Link>
+                          <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-colors text-left">
+                            <Settings className="w-4 h-4 text-slate-400" />
+                            Settings
+                          </button>
+                          <div className="h-px bg-slate-100 my-1" />
+                          <button
+                            onClick={handleSignOut}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors text-left"
+                          >
+                            <LogOut className="w-4 h-4" />
+                            Sign Out
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <Link
+                    to="/login"
+                    className="text-sm font-semibold text-slate-600 hover:text-slate-900"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="bg-slate-900 text-white text-sm font-bold px-5 py-2.5 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200/50 hover:shadow-xl hover:-translate-y-0.5"
+                  >
+                    Get Started
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
+        </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "100vh" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="fixed inset-0 top-0 left-0 z-40 bg-white md:hidden pt-24 px-6 overflow-hidden"
+          >
+            <div className="flex flex-col gap-6">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-2xl font-bold text-slate-900 hover:text-emerald-600 transition-colors"
+                >
+                  {link.name}
+                </Link>
+              ))}
+
+              <div className="h-px bg-slate-100 w-full my-2" />
+
+              {user ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl">
+                    <img
+                      src={
+                        user.photoURL ||
+                        `https://ui-avatars.com/api/?name=${user.email}`
+                      }
+                      alt="Profile"
+                      className="w-12 h-12 rounded-full"
+                    />
+                    <div>
+                      <p className="font-bold text-slate-900">
+                        {user.displayName}
+                      </p>
+                      <p className="text-sm text-slate-500">{user.email}</p>
+                    </div>
+                  </div>
+                  <Link
+                    to="/app"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 w-full bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-200"
+                  >
+                    <LayoutDashboard className="w-5 h-5" />
+                    Launch Dashboard
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center justify-center gap-2 w-full bg-slate-100 text-slate-600 font-bold py-4 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <Link
+                    to="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full bg-slate-100 text-slate-900 font-bold py-4 rounded-xl text-center"
+                  >
+                    Log In
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl text-center shadow-lg shadow-slate-200"
+                  >
+                    Get Started Free
+                  </Link>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

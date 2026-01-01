@@ -23,7 +23,11 @@ export function useReviewGenerator() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ reviewText, businessType }),
+        body: JSON.stringify({
+          reviewText,
+          businessType,
+          userId: auth.currentUser?.uid, // Send User ID for rate limiting
+        }),
       });
 
       if (!response.ok) {
