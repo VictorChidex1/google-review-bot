@@ -10,7 +10,7 @@ dotenv.config({ path: ".env.local" });
 
 // Initialize Firebase Admin (Singleton)
 function getAdminAuth() {
-  if (!admin.apps.length) {
+  if (!admin.apps?.length) {
     try {
       // 1. Try to load from local file (Local Development)
       const serviceAccountPath = path.join(
