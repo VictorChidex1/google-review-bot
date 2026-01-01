@@ -1897,6 +1897,57 @@ Instead of a tiny dropdown, the mobile menu is now a **Full Screen Overlay**.
 - **Why?**: Tapping tiny links on a phone is frustrating.
 - **Fix**: We expanded the menu to `inset-0` (Full Screen) and made the links massive (`text-2xl`), giving it a premium "app-like" feel.
 
+---
+
+## 34. Phase 23: The Admin Dashboard 👑
+
+You asked: _"How do I see my messages? And how do we secure it?"_
+
+We built a Role-Based Access Control (RBAC) system.
+
+### A. The Security (Frontend Gatekeeper) 🛡️
+
+In `src/pages/AdminPage.tsx`, we don't just render the page. We run a security clearance check first:
+
+```typescript
+useEffect(() => {
+  // 1. Get current user
+  const user = auth.currentUser;
+
+  // 2. Fetch their "File" from Firestore
+  const userDoc = await getDoc(doc(db, "users", user.uid));
+
+  // 3. The Golden Ticket Check
+  if (userDoc.data().isAdmin === true) {
+    setIsAuthorized(true); // Welcome, Boss.
+  } else {
+    navigate("/"); // Security Guard kicks you out.
+  }
+}, []);
+```
+
+### B. The Navbar "Peek" 👀
+
+The Navbar now has a secret. When you log in, it quietly fetches your user profile in the background.
+
+```typescript
+// Navbar.tsx
+if (userDoc.data().isAdmin === true) {
+  setIsAdmin(true); // Show the hidden link
+}
+```
+
+This uses **Conditional Rendering** (`{isAdmin && <Link ... />}`) to reveal the "Admin Panel" button only to you.
+
+### C. Reading Messages 📩
+
+The Admin Page queries the `contact_messages` collection:
+`query(collection(db, "contact_messages"), orderBy("createdAt", "desc"))`
+
+This pulls all the form submissions you fixed in Phase 19 and displays them in a beautiful, easy-to-read list.
+
+**Result**: A complete internal tool for managing your business, hidden in plain sight.
+
 ```
 
 ```

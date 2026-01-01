@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
-import { auth } from "../firebase";
+import { doc, getDoc } from "firebase/firestore"; // Import needed for Admin check
+import { auth, db } from "../firebase"; // Import db
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Menu,
@@ -11,6 +12,7 @@ import {
   Settings,
   LayoutDashboard,
   Coffee,
+  ShieldAlert,
 } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -21,14 +23,31 @@ function cn(...inputs: ClassValue[]) {
 
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        // Check Admin Status
+        try {
+          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+          if (userDoc.exists() && userDoc.data().isAdmin === true) {
+            setIsAdmin(true);
+          } else {
+            setIsAdmin(false);
+          }
+        } catch (e) {
+          console.error("Error checking admin status", e);
+          setIsAdmin(false);
+        }
+      } else {
+        setIsAdmin(false);
+      }
     });
 
     const handleScroll = () => {
@@ -46,11 +65,12 @@ export default function Navbar() {
     await signOut(auth);
     setIsDropdownOpen(false);
     setIsMobileMenuOpen(false);
+    setIsAdmin(false);
   };
 
   const navLinks = [
     { name: "Features", href: "/#features" },
-    { name: "Pricing", href: "/#pricing" }, // Assuming you have an ID for pricing
+    { name: "Pricing", href: "/#pricing" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
@@ -78,7 +98,7 @@ export default function Navbar() {
                 />
               </div>
               <span className="font-bold text-xl text-slate-900 tracking-tight">
-                VeraVox<span className="text-emerald-600">.AI</span>
+                VeraVox<span className="text-emerald-600">.ai</span>
               </span>
             </Link>
 
@@ -154,6 +174,18 @@ export default function Navbar() {
                             <LayoutDashboard className="w-4 h-4 text-emerald-600" />
                             Dashboard
                           </Link>
+
+                          {/* ADMIN LINK */}
+                          {isAdmin && (
+                            <Link
+                              to="/admin"
+                              className="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-colors"
+                            >
+                              <ShieldAlert className="w-4 h-4 text-purple-600" />
+                              Admin Panel
+                            </Link>
+                          )}
+
                           <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-colors text-left">
                             <Settings className="w-4 h-4 text-slate-400" />
                             Settings
@@ -253,6 +285,19 @@ export default function Navbar() {
                     <LayoutDashboard className="w-5 h-5" />
                     Launch Dashboard
                   </Link>
+
+                  {/* ADMIN MOBILE LINK */}
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center justify-center gap-2 w-full bg-purple-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-purple-200"
+                    >
+                      <ShieldAlert className="w-5 h-5" />
+                      Admin Panel
+                    </Link>
+                  )}
+
                   <button
                     onClick={handleSignOut}
                     className="flex items-center justify-center gap-2 w-full bg-slate-100 text-slate-600 font-bold py-4 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors"
