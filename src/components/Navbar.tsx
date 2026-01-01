@@ -78,7 +78,7 @@ export default function Navbar() {
                 />
               </div>
               <span className="font-bold text-xl text-slate-900 tracking-tight">
-                VeraVox<span className="text-emerald-600">.ai</span>
+                VeraVox<span className="text-emerald-600">.AI</span>
               </span>
             </Link>
 
