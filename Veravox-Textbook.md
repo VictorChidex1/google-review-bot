@@ -1948,6 +1948,68 @@ This pulls all the form submissions you fixed in Phase 19 and displays them in a
 
 **Result**: A complete internal tool for managing your business, hidden in plain sight.
 
+---
+
+## 35. Phase 24: The "Nuclear Option" (Account Deletion) ☢️
+
+You asked: _"How do I delete my account? And how does it clean up everything?"_
+
+This is a dangerous feature, so we built it with **Double Confirmations** and **Security Rules**.
+
+### A. The Two-Step Deletion 🧹
+
+Deleting a user involves two completely separate systems:
+
+1.  **The Database (`Firestore`)**: Where your name, email, and preferences live.
+2.  **The Auth System (`Firebase Authentication`)**: Where your login credentials (email/password or Google) live.
+
+We must delete **both**.
+
+```typescript
+// src/pages/SettingsPage.tsx
+
+// 1. Delete the "File" (Your Data)
+await deleteDoc(doc(db, "users", user.uid));
+
+// 2. Delete the "Key" (Your Login)
+await deleteUser(user);
+```
+
+**Analogy**:
+
+- Step 1 is like burning the documents in your office.
+- Step 2 is like melting your ID card and keys.
+
+### B. The "Danger Zone" Security Update 🔒
+
+By default, Firebase protects data so much that even _you_ can't delete your own profile. We had to update `firestore.rules`.
+
+**Old Rule**: `allow write: if isAdmin();` (Too strict!)
+**New Rule**:
+
+```javascript
+// Allow deletion IF you are the owner OR an admin
+allow delete: if request.auth.uid == userId || isAdmin();
+```
+
+### C. UX: The "Double Tap" ⚠️
+
+We didn't just put a button. We used `window.confirm` **twice**.
+
+1.  _"Are you SURE? This will permanently delete..."_
+2.  _"Last chance. Really delete?"_
+
+This friction is intentional. It prevents accidental clicks from destroying data.
+
+### D. The Result
+
+When you click "Delete Account":
+
+1.  React deletes your Firestore document.
+2.  React tells Firebase Auth to delete your user.
+3.  The app detects you are "no longer a user" and redirects you to the Homepage (`/`).
+4.  It's as if you never existed in the system. Ghost mode. 👻
+
 ```
 
 ```

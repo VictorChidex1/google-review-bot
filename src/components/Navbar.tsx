@@ -186,10 +186,13 @@ export default function Navbar() {
                             </Link>
                           )}
 
-                          <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-colors text-left">
+                          <Link
+                            to="/settings"
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-colors text-left"
+                          >
                             <Settings className="w-4 h-4 text-slate-400" />
                             Settings
-                          </button>
+                          </Link>
                           <div className="h-px bg-slate-100 my-1" />
                           <button
                             onClick={handleSignOut}

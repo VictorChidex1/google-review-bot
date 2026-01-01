@@ -25,9 +25,16 @@ service cloud.firestore {
     }
 
     // Rules for 'users' collection
+    // Rules for 'users' collection
     match /users/{userId} {
       allow read: if request.auth.uid == userId || isAdmin();
-      allow write: if isAdmin();
+      // Allow users to delete their own account
+      allow delete: if request.auth.uid == userId;
+      // Allow users to create their own account (for signup)
+      allow create: if request.auth.uid == userId;
+      // Allow users to update their own account, BUT block them from changing 'isAdmin'
+      allow update: if isAdmin() || (request.auth.uid == userId && 
+         (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin));
     }
 
     // Rules for 'contact_messages' collection

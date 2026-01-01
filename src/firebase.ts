@@ -20,3 +20,6 @@ export const db = getFirestore(app);
 // Initialize Auth
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+// Initialize Storage
+import { getStorage } from "firebase/storage";
+export const storage = getStorage(app);
