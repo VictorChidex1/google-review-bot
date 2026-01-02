@@ -21,11 +21,13 @@ import SettingsPage from "./pages/SettingsPage";
 import DocsPage from "./pages/DocsPage";
 
 import ScrollToHashElement from "./components/ScrollToHashElement";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <Router>
       <ScrollToHashElement />
+      <ScrollToTop />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
