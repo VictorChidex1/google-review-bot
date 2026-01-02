@@ -304,10 +304,11 @@ export default function Navbar({ darkHero = false }: NavbarProps) {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "100vh" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="fixed inset-0 top-0 left-0 z-40 bg-white md:hidden pt-24 px-6 overflow-hidden"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 top-0 left-0 z-40 bg-white md:hidden pt-24 px-6 overflow-hidden h-screen"
           >
             <div className="flex flex-col gap-6">
               {navLinks.map((link) => (

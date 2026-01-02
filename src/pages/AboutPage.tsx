@@ -436,7 +436,7 @@ export default function AboutPage() {
           {/* Animated Stars/Particles */}
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-tr from-slate-900 to-slate-800 opacity-90" />
-            {[...Array(20)].map((_, i) => (
+            {[...Array(12)].map((_, i) => (
               <motion.div
                 key={i}
                 className="absolute bg-white rounded-full opacity-20"
