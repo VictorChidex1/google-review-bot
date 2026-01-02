@@ -98,7 +98,7 @@ export default function AboutPage() {
             >
               Empowering Owners{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
-                To Be Heard
+                to be Heard
               </span>
             </motion.h1>
             <motion.p
@@ -373,13 +373,13 @@ export default function AboutPage() {
               {/* Decorative elements */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
-              {/* Avatar Placeholder */}
+              {/* Avatar Image */}
               <motion.div
                 variants={slideLeft}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
-                className="flex-shrink-0 relative"
+                className="flex-shrink-0 relative group"
               >
                 <motion.div
                   animate={{
@@ -390,14 +390,17 @@ export default function AboutPage() {
                     ],
                   }}
                   transition={{ duration: 3, repeat: Infinity }}
-                  className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-500 p-1"
+                  className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-500 p-1 relative"
                 >
-                  <div className="w-full h-full rounded-full bg-slate-800 flex items-center justify-center overflow-hidden">
-                    <span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
-                      VC
-                    </span>
+                  <div className="w-full h-full rounded-full bg-slate-800 flex items-center justify-center overflow-hidden relative">
+                    <img
+                      src="/victor-chidera.webp"
+                      alt="Victor Chidera"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </motion.div>
+
                 <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full border-4 border-slate-800">
                   FOUNDER
                 </div>

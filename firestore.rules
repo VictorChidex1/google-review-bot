@@ -67,5 +67,6 @@ service cloud.firestore {
                    && request.resource.size < 5 * 1024 * 1024 // Max 5MB
                    && request.resource.contentType.matches('image/.*');
     }
+
   }
 }
