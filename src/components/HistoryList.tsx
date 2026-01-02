@@ -5,6 +5,8 @@ import {
   onSnapshot,
   limit,
   where,
+  deleteDoc,
+  doc,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "../firebase";
@@ -66,6 +68,20 @@ export default function HistoryList() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (!confirm("Are you sure you want to delete this response?")) return;
+
+    try {
+      await deleteDoc(doc(db, "history", id));
+      // Optimistic update: Remove from UI immediately
+      setHistory((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Error deleting document: ", error);
+      alert("Failed to delete. Please try again.");
+    }
+  };
+
   if (loading) {
     return (
       <div className="text-center py-4 text-slate-500">Loading history...</div>
@@ -87,9 +103,32 @@ export default function HistoryList() {
         {history.map((item) => (
           <div
             key={item.id}
-            className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
+            className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group relative"
           >
-            <div className="flex justify-between items-start mb-2">
+            {/* Delete Button (Visible on Hover) */}
+            <button
+              onClick={(e) => handleDelete(e, item.id || "")}
+              className="absolute top-4 right-4 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1"
+              title="Delete Response"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+              </svg>
+            </button>
+
+            <div className="flex justify-between items-start mb-2 pr-8">
               <span className="inline-block px-2 py-1 text-xs font-bold bg-slate-100 text-slate-700 rounded-md border border-slate-200">
                 {item.businessType}
               </span>

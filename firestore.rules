@@ -21,10 +21,10 @@ service cloud.firestore {
     match /history/{document} {
       allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow delete: if isAdmin();
+      // ALLOW DELETE: If the user owns the document OR is an admin
+      allow delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
     }
 
-    // Rules for 'users' collection
     // Rules for 'users' collection
     match /users/{userId} {
       allow read: if request.auth.uid == userId || isAdmin();
@@ -53,6 +53,19 @@ service cloud.firestore {
       // Only the Backend (Admin SDK) can write to this collection.
       // Users cannot reset their own limits.
       allow write: if false; 
+    }
+
+    // Profile Pictures: /profile_pictures/{userId}
+    match /profile_pictures/{userId} {
+      // READ: Public or Authenticated? 
+      // Let's make it public for now so the URL works easily, 
+      // or at least require auth. Let's start with auth required.
+      allow read: if isAuthenticated(); 
+      
+      // WRITE: Only the owner can write
+      allow write: if isOwner(userId)
+                   && request.resource.size < 5 * 1024 * 1024 // Max 5MB
+                   && request.resource.contentType.matches('image/.*');
     }
   }
 }

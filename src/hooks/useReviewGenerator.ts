@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import type { ReviewResponse } from "../types";
@@ -10,9 +10,12 @@ export function useReviewGenerator() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const generateReply = async () => {
-    if (!reviewText) return;
+  const isGeneratingRef = useRef(false);
 
+  const generateReply = async () => {
+    if (!reviewText || isGeneratingRef.current) return;
+
+    isGeneratingRef.current = true;
     setLoading(true);
     setError("");
     setGeneratedReply("");
@@ -55,6 +58,7 @@ export function useReviewGenerator() {
       console.error(err);
     } finally {
       setLoading(false);
+      isGeneratingRef.current = false;
     }
   };
 
