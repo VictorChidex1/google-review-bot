@@ -98,7 +98,7 @@ export default function AboutPage() {
             >
               Empowering Owners{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
-                to be Heard
+                To Be Heard
               </span>
             </motion.h1>
             <motion.p
