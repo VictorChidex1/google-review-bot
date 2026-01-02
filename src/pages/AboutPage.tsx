@@ -64,18 +64,10 @@ export default function AboutPage() {
       <main>
         {/* Dark Hero Section */}
         <div className="bg-slate-900 pt-32 pb-48 relative overflow-hidden">
-          {/* Ambient Background Effects */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-4xl opacity-20 pointer-events-none">
-            <motion.div
-              animate={{ opacity: [0.2, 0.4, 0.2], scale: [1, 1.1, 1] }}
-              transition={{ duration: 8, repeat: Infinity }}
-              className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500 rounded-full blur-[128px]"
-            />
-            <motion.div
-              animate={{ opacity: [0.2, 0.4, 0.2], scale: [1, 1.1, 1] }}
-              transition={{ duration: 8, repeat: Infinity, delay: 4 }}
-              className="absolute top-1/2 right-1/4 w-96 h-96 bg-emerald-500 rounded-full blur-[128px]"
-            />
+          {/* Ambient Background Effects - Optimized for Safari */}
+          <div className="absolute inset-0 pointer-events-none hidden md:block">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,_rgba(59,130,246,0.15),transparent_60%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_70%,_rgba(16,185,129,0.15),transparent_60%)]" />
           </div>
 
           <div className="max-w-4xl mx-auto px-4 text-center relative z-10">

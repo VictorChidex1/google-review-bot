@@ -88,7 +88,7 @@ export default function Navbar({ darkHero = false }: NavbarProps) {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out border-b",
           isScrolled
-            ? "bg-white/80 backdrop-blur-md border-slate-200/50 py-3 shadow-sm"
+            ? "bg-white/95 border-slate-200/50 py-3 shadow-sm md:bg-white/80 md:backdrop-blur-md"
             : "bg-white/0 border-transparent py-5"
         )}
       >
