@@ -32,7 +32,8 @@ service cloud.firestore {
       allow delete: if request.auth.uid == userId;
       // Allow users to create their own account (for signup)
       allow create: if request.auth.uid == userId;
-      // Allow users to update their own account, BUT block them from changing 'isAdmin'
+      // VERIFIED: Allows users to update 'photoURL', 'displayName', etc.
+      // Security: Prevents users from granting themselves 'isAdmin' privileges.
       allow update: if isAdmin() || (request.auth.uid == userId && 
          (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin));
     }
