@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import HeroSection from "../components/HeroSection";
 import TrustBar from "../components/TrustBar";
 import FeaturesGrid from "../components/FeaturesGrid";
+import PricingSection from "../components/PricingSection";
 import FAQ from "../components/FAQ";
 
 export default function LandingPage() {
@@ -19,6 +20,9 @@ export default function LandingPage() {
 
         {/* FEATURES GRID */}
         <FeaturesGrid />
+
+        {/* PRICING SECTION */}
+        <PricingSection />
 
         {/* FAQ SECTION */}
         <FAQ />

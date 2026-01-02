@@ -20,9 +20,12 @@ import GeneratorPage from "./pages/GeneratorPage";
 import SettingsPage from "./pages/SettingsPage";
 import DocsPage from "./pages/DocsPage";
 
+import ScrollToHashElement from "./components/ScrollToHashElement";
+
 function App() {
   return (
     <Router>
+      <ScrollToHashElement />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
