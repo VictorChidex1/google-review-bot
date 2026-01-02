@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore"; // Import needed for Admin check
 import { auth, db } from "../firebase"; // Import db
@@ -20,7 +20,11 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export default function Navbar() {
+interface NavbarProps {
+  darkHero?: boolean;
+}
+
+export default function Navbar({ darkHero = false }: NavbarProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -74,6 +78,10 @@ export default function Navbar() {
     { name: "Contact", href: "/contact" },
   ];
 
+  // Logic: If we are at the top AND it's a dark hero, use light text.
+  // Otherwise (scrolled down OR not a dark hero), use standard dark text.
+  const useLightText = darkHero && !isScrolled;
+
   return (
     <>
       <nav
@@ -96,8 +104,20 @@ export default function Navbar() {
                   className="w-9 h-9 rounded-lg relative z-10 shadow-sm"
                 />
               </div>
-              <span className="font-bold text-xl text-slate-900 tracking-tight">
-                VeraVox<span className="text-emerald-600">.ai</span>
+              <span
+                className={cn(
+                  "font-bold text-xl tracking-tight transition-colors",
+                  useLightText ? "text-white" : "text-slate-900"
+                )}
+              >
+                VeraVox
+                <span
+                  className={
+                    useLightText ? "text-emerald-400" : "text-emerald-600"
+                  }
+                >
+                  .AI
+                </span>
               </span>
             </Link>
 
@@ -107,7 +127,12 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   to={link.href}
-                  className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors"
+                  className={cn(
+                    "text-sm font-medium transition-colors",
+                    useLightText
+                      ? "text-slate-300 hover:text-white"
+                      : "text-slate-600 hover:text-emerald-600"
+                  )}
                 >
                   {link.name}
                 </Link>
@@ -121,19 +146,34 @@ export default function Navbar() {
                 href="https://www.buymeacoffee.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 text-slate-400 hover:text-yellow-500 hover:bg-yellow-50 rounded-full transition-all"
+                className={cn(
+                  "p-2 rounded-full transition-all",
+                  useLightText
+                    ? "text-slate-400 hover:text-yellow-400 hover:bg-white/10"
+                    : "text-slate-400 hover:text-yellow-500 hover:bg-yellow-50"
+                )}
                 title="Buy me a coffee"
               >
                 <Coffee className="w-5 h-5" />
               </a>
 
-              <div className="h-5 w-px bg-slate-200" />
+              <div
+                className={cn(
+                  "h-5 w-px",
+                  useLightText ? "bg-white/20" : "bg-slate-200"
+                )}
+              />
 
               {user ? (
                 <div className="relative">
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center gap-2 p-1 pr-3 rounded-full border border-slate-200 hover:border-emerald-200 hover:bg-slate-50 transition-all group"
+                    className={cn(
+                      "flex items-center gap-2 p-1 pr-3 rounded-full border transition-all group",
+                      useLightText
+                        ? "border-white/20 hover:border-white/50 hover:bg-white/10"
+                        : "border-slate-200 hover:border-emerald-200 hover:bg-slate-50"
+                    )}
                   >
                     <img
                       src={
@@ -143,7 +183,14 @@ export default function Navbar() {
                       alt="Profile"
                       className="w-8 h-8 rounded-full object-cover ring-2 ring-white"
                     />
-                    <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900 max-w-[100px] truncate">
+                    <span
+                      className={cn(
+                        "text-sm font-medium max-w-[100px] truncate",
+                        useLightText
+                          ? "text-slate-200 group-hover:text-white"
+                          : "text-slate-700 group-hover:text-slate-900"
+                      )}
+                    >
                       {user.displayName?.split(" ")[0] || "Account"}
                     </span>
                   </button>
@@ -209,13 +256,23 @@ export default function Navbar() {
                 <div className="flex items-center gap-3">
                   <Link
                     to="/login"
-                    className="text-sm font-semibold text-slate-600 hover:text-slate-900"
+                    className={cn(
+                      "text-sm font-semibold transition-colors",
+                      useLightText
+                        ? "text-slate-300 hover:text-white"
+                        : "text-slate-600 hover:text-slate-900"
+                    )}
                   >
                     Log in
                   </Link>
                   <Link
                     to="/signup"
-                    className="bg-slate-900 text-white text-sm font-bold px-5 py-2.5 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200/50 hover:shadow-xl hover:-translate-y-0.5"
+                    className={cn(
+                      "text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5",
+                      useLightText
+                        ? "bg-white text-slate-900 hover:bg-slate-100 shadow-white/10"
+                        : "bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200/50"
+                    )}
                   >
                     Get Started
                   </Link>
@@ -226,7 +283,12 @@ export default function Navbar() {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+              className={cn(
+                "md:hidden p-2 rounded-xl transition-colors",
+                useLightText
+                  ? "text-slate-300 hover:bg-white/10"
+                  : "text-slate-600 hover:bg-slate-100"
+              )}
             >
               {isMobileMenuOpen ? (
                 <X className="w-6 h-6" />

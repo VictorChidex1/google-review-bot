@@ -68,7 +68,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
-      <Navbar />
+      <Navbar darkHero={true} />
 
       <main>
         {/* Dark Hero Section */}
