@@ -2848,3 +2848,76 @@ We don't want the animation to play while the user is looking at the top of the 
 | **StaggerChildren** | A parent rule that forces children to animate one by one with a delay.                           |
 | **Viewport**        | The visible area of the screen. `whileInView` triggers actions when an element enters this area. |
 | **Orchestration**   | Coordinating multiple animations to play in a specific sequence (Parent controls Children).      |
+
+---
+
+## 23. Deep Dive: Global "Scroll To Top" Button
+
+You asked for a detailed explanation of the logic behind the "Scroll To Top" button.
+It seems simple, but getting it to appear/disappear smoothly requires careful state management.
+
+### Part 1: The Logic (Listening to the Window)
+
+We need the button to be invisible at the top of the page and appear ONLY when the user scrolls down.
+
+```typescript
+useEffect(() => {
+  const toggleVisibility = () => {
+    // Logic: If scrolled more than 300 pixels, show button.
+    if (window.scrollY > 300) {
+      setIsVisible(true);
+    } else {
+      setIsVisible(false);
+    }
+  };
+
+  // Add the listener
+  window.addEventListener("scroll", toggleVisibility);
+
+  // CLEANUP: Very Important!
+  return () => window.removeEventListener("scroll", toggleVisibility);
+}, []);
+```
+
+- **`window.scrollY`**: A native Javascript property that tells us how many pixels the user has scrolled down vertically.
+- **Cleanup Function (`return () => ...`)**: Since this component sits in `App.tsx`, it stays alive differently than normal pages. But it's always best practice to remove event listeners when a component dies to prevent memory leaks.
+
+### Part 2: The Action (Smooth Scroll)
+
+When clicked, we don't want the page to "teleport" to the top. We want it to glide.
+
+```typescript
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth", // The magic CSS property in JS form
+  });
+};
+```
+
+### Part 3: The Animation (Enter/Exit)
+
+We used `AnimatePresence` from Framer Motion. Why?
+Normally in React, if you do `{isVisible && <Button />}` and `isVisible` becomes false, the button vanishes INSTANTLY.
+`AnimatePresence` allows the component to exist for a few milliseconds _after_ it's been unmounted, just long enough to play an exit animation.
+
+```jsx
+<AnimatePresence>
+  {isVisible && (
+    <motion.button
+      initial={{ opacity: 0, scale: 0.5 }} // Start small/invisible
+      animate={{ opacity: 1, scale: 1 }} // Grow to normal
+      exit={{ opacity: 0, scale: 0.5 }} // Shrink away when removed
+    />
+  )}
+</AnimatePresence>
+```
+
+### Summary of Terminologies Used
+
+| Term                 | Definition                                                                                                          |
+| :------------------- | :------------------------------------------------------------------------------------------------------------------ |
+| **Event Listener**   | A function that waits for a specific event (like "scroll" or "click") to happen in the browser.                     |
+| **Memory Leak**      | When an app keeps using memory for things that aren't needed anymore (like listening for scrolls on a closed page). |
+| **Cleanup Function** | Code in `useEffect` specifically designed to "clean up the mess" (remove listeners) before a component dies.        |
+| **AnimatePresence**  | A Framer Motion tool that allows components to play an animation _as they are being removed_ from the DOM.          |

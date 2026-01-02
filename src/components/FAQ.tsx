@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronDown, HelpCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const faqs = [
   {
@@ -44,22 +45,44 @@ export default function FAQ() {
       <div className="max-w-4xl mx-auto px-4 relative z-10">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-sm mb-6 border border-slate-100">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-sm mb-6 border border-slate-100"
+          >
             <HelpCircle className="w-8 h-8 text-blue-600" />
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+          </motion.div>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-3xl md:text-4xl font-bold text-slate-900 mb-4"
+          >
             Frequently Asked Questions
-          </h2>
-          <p className="text-xl text-slate-500">
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-xl text-slate-500"
+          >
             Everything you need to know about VeraVox and how it works.
-          </p>
+          </motion.p>
         </div>
 
         {/* Accordion */}
         <div className="space-y-4">
           {faqs.map((faq, index) => (
-            <div
+            <motion.div
               key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
               className={`border rounded-2xl transition-all duration-300 group ${
                 openIndex === index
                   ? "bg-white shadow-lg border-blue-100 border-l-4 border-l-blue-500 scale-[1.02]"
@@ -77,28 +100,37 @@ export default function FAQ() {
                 >
                   {faq.question}
                 </span>
-                <ChevronDown
-                  className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${
-                    openIndex === index
-                      ? "rotate-180 text-blue-600"
-                      : "group-hover:text-blue-500"
-                  }`}
-                />
+                <motion.div
+                  animate={{ rotate: openIndex === index ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ChevronDown
+                    className={`w-5 h-5 text-slate-400 ${
+                      openIndex === index
+                        ? "text-blue-600"
+                        : "group-hover:text-blue-500"
+                    }`}
+                  />
+                </motion.div>
               </button>
-              <div
-                className={`grid transition-all duration-300 ease-in-out ${
-                  openIndex === index
-                    ? "grid-rows-[1fr] opacity-100 pb-6"
-                    : "grid-rows-[0fr] opacity-0"
-                }`}
-              >
-                <div className="overflow-hidden px-6">
-                  <p className="text-slate-600 leading-relaxed border-t border-slate-50 pt-4">
-                    {faq.answer}
-                  </p>
-                </div>
-              </div>
-            </div>
+              <AnimatePresence>
+                {openIndex === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-6">
+                      <p className="text-slate-600 leading-relaxed border-t border-slate-50 pt-4">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
           ))}
         </div>
       </div>
