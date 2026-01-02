@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   collection,
   query,
-  orderBy,
   onSnapshot,
   limit,
   where,
@@ -21,19 +20,33 @@ export default function HistoryList() {
         const q = query(
           collection(db, "history"),
           where("userId", "==", user.uid),
-          orderBy("createdAt", "desc"),
-          limit(20)
+          limit(50)
         );
 
-        const unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
-          const items: HistoryItem[] = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-            createdAt: doc.data().createdAt?.toDate(),
-          })) as HistoryItem[];
-          setHistory(items);
-          setLoading(false);
-        });
+        const unsubscribeSnapshot = onSnapshot(
+          q,
+          (snapshot) => {
+            const items: HistoryItem[] = snapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+              createdAt: doc.data().createdAt?.toDate(),
+            })) as HistoryItem[];
+
+            // Client-side sort locally to avoid needing a composite index
+            items.sort((a, b) => {
+              const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+              const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+              return timeB - timeA;
+            });
+
+            setHistory(items);
+            setLoading(false);
+          },
+          (error) => {
+            console.error("Error fetching history:", error);
+            setLoading(false);
+          }
+        );
 
         return () => unsubscribeSnapshot();
       } else {
