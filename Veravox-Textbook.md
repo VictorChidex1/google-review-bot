@@ -3446,3 +3446,145 @@ You correctly noticed that the Terms page was using **Indigo/Purple**, while the
 - **Visuals:** We made it look like a feature page.
 - **Content:** We added specific clauses to protect against AI risks and Payment disputes.
 - **Result:** A binding contract that looks beautiful. 🛡️
+
+---
+
+## 30. The "Amber" Update (Cookie Policy)
+
+We completed the "Legal Trinity" with the Cookie Policy. This page had a very specific job: **Transparency**.
+
+### A. The Color Psychology (Amber)
+
+Privacy is "Green" (Go/Safe). Terms are "Blue" (Business/Contract).
+For Cookies, we chose **Amber/Orange**.
+
+- **Why?** In UI design, Amber usually means "Warning" or "Attention". Cookies are a technical detail that requires user attention (GDPR warnings).
+- **The Code:**
+  ```tsx
+  <div className="bg-[radial-gradient(circle_at_20%_20%,_rgba(245,158,11,0.15),transparent_60%)]" />
+  ```
+  (Using Tailwind colors `amber-500` and `orange-400`).
+
+### B. The Cookie Grid (Cards vs Lists)
+
+Most sites just dump a list of cookies. We built a **3-Column Grid** to educate the user.
+
+**The Code Structure:**
+
+```tsx
+<div className="grid sm:grid-cols-2 gap-4">
+  <div className="bg-slate-50 p-5 rounded-xl border ...">
+    {/* 1. The Icon */}
+    <div className="w-8 h-8 rounded-full bg-blue-100 ...">
+      <BarChart />
+    </div>
+    {/* 2. The Title */}
+    <h3 className="font-bold ...">Analytics</h3>
+    {/* 3. The Explanation */}
+    <p className="text-sm ...">Help us understand...</p>
+  </div>
+</div>
+```
+
+**Mentor Explanation:**
+
+- **Visual Grouping**: By putting "Analytics" in its own box with a `BarChart` icon, we make it distinct from "Essential" (Shield icon).
+- **Cognitive Load**: The user doesn't have to read a paragraph. They see the icon, they read the title, and they understand.
+
+### C. The "Third-Party" Disclosure
+
+We added a specific section to list **Who** is tracking them.
+
+- **Google Analytics**: Performance.
+- **Firebase**: Auth state.
+- **Stripe**: Fraud detection.
+
+**Why?** Modern privacy laws (CCPA/GDPR) require you to disclose _who else_ sees the data, not just what _you_ do with it.
+
+### Summary
+
+The Legal Section is no longer an afterthought. It is a **Branded Experience**.
+
+- All 3 pages share the same **"Dark Hero"** + **"Floating Content"** architecture.
+- Each page has a unique **Color Identity** (Green, Blue, Amber).
+- All text is **Animted** (Framer Motion).
+
+The site is now legally robust and visually consistent. 🍪
+
+---
+
+## 31. The Hybrid Component (Public/Private Docs)
+
+You asked for a deep dive into the **"Public Docs"** feature. This wasn't just a simple route change; it required a clever architectural pattern called **Polymorphism**.
+
+### A. The Challenge: "Dependence on Context"
+
+The `DocsPage.tsx` was originally designed to live inside the **Dashboard Layout**.
+
+- It assumed the `Sidebar` was already there.
+- It assumed the `Navbar` was handled by the parent layout.
+
+**The Problem:** If we just pointed a public route (`/docs`) to it, it would show up "naked"—no navigation, no footer, just raw content.
+
+### B. The Solution: "Prop-Driven Layout"
+
+We taught the component to be "Self-Aware" using a simple prop: `isPublic`.
+
+**The Logic:**
+
+1.  **Default Mode (`isPublic = false`)**: "I am inside the dashboard. I will only render my content. My parent handles the layout."
+2.  **Public Mode (`isPublic = true`)**: "I am on the open internet. I must wrap myself in a Navbar and Footer to look like a complete page."
+
+### C. The Code Walkthrough
+
+**1. The Interface (The "Contract")**
+
+```tsx
+interface DocsPageProps {
+  isPublic?: boolean; // Optional. Defaults to false.
+}
+```
+
+- **Deep Dive:** The `?` means optional. If we use `<DocsPage />`, TypeScript assumes `isPublic` is false.
+
+**2. The Conditional Wrapper (The "brain")**
+
+```tsx
+const content = (
+  // ... The actual documentation HTML ...
+);
+
+if (isPublic) {
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <Navbar darkHero={false} />  {/* Add the Public Navbar */}
+      {content}                    {/* Inject the documentation */}
+      <Footer />                   {/* Add the Public Footer */}
+    </div>
+  );
+}
+
+return content; // Otherwise, just return the raw content for the Dashboard.
+```
+
+**Mentor Explanation:**
+
+- **Variable Extraction**: We stored the massive HTML blob in a variable called `content`. This prevents us from duplicating 200 lines of code. DRY (Don't Repeat Yourself).
+- **Wrapper Pattern**: If `isPublic` is true, we wrap that variable in the site's "Public Shell" (Navbar + Footer).
+
+### D. The Routing (`App.tsx`)
+
+We now use the same component in two places, but with different "personalities."
+
+```tsx
+/* 1. Public Route */
+<Route path="/docs" element={<DocsPage isPublic={true} />} />
+
+/* 2. Private Route */
+<Route path="/dashboard/docs" element={<DocsPage />} />
+```
+
+### Summary
+
+- **Terminology:** **Component Reuse**.
+- **Benefit:** We maintain ONE documentation file. When you update the docs, it updates for both Public visitors and Private users instantly. No copy-pasting required. 🧠

@@ -65,10 +65,7 @@ function App() {
           path="/settings"
           element={<Navigate to="/dashboard/settings" replace />}
         />
-        <Route
-          path="/docs"
-          element={<Navigate to="/dashboard/docs" replace />}
-        />
+        <Route path="/docs" element={<DocsPage isPublic={true} />} />
       </Routes>
     </Router>
   );
