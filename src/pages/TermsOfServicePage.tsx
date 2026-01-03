@@ -4,17 +4,18 @@ import { motion, type Variants } from "framer-motion";
 import {
   FileCheck,
   UserCheck,
-  CreditCard,
+  Gavel,
+  ShieldAlert,
   Bot,
   Ban,
-  ShieldAlert,
-  Gavel,
+  CreditCard,
   ChevronRight,
   Terminal,
 } from "lucide-react";
+import SEO from "../components/SEO";
 
 export default function TermsOfServicePage() {
-  // Animation Variants (Consistent with Privacy & About Pages)
+  // Animation Variants
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -32,6 +33,10 @@ export default function TermsOfServicePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+      <SEO
+        title="Terms of Service"
+        description="The rules of the road. Understand your rights and responsibilities when using VeraVox."
+      />
       <Navbar darkHero={true} />
 
       <main>

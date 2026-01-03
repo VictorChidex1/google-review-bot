@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import SEO from "../components/SEO";
 
 interface DocsPageProps {
   isPublic?: boolean;
@@ -22,6 +23,10 @@ export default function DocsPage({ isPublic = false }: DocsPageProps) {
         isPublic ? "pt-32 pb-24 min-h-screen" : ""
       }`}
     >
+      <SEO
+        title="Documentation & Guides"
+        description="Learn how to use VeraVox AI to master your Google Reviews. Quick start guides, best practices, and pro tips."
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="pb-12 border-b border-slate-200 mb-12">

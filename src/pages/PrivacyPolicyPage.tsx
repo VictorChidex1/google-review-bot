@@ -13,6 +13,7 @@ import {
   RefreshCw,
   ChevronRight,
 } from "lucide-react";
+import SEO from "../components/SEO";
 
 export default function PrivacyPolicyPage() {
   // Animation Variants (Matching AboutPage)
@@ -33,6 +34,10 @@ export default function PrivacyPolicyPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+      <SEO
+        title="Privacy Policy"
+        description="We value your privacy. Read how VeraVox collects, uses, and protects your data."
+      />
       <Navbar darkHero={true} />
 
       <main>

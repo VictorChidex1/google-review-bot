@@ -13,6 +13,7 @@ import {
   MousePointerClick,
   RefreshCw,
 } from "lucide-react";
+import SEO from "../components/SEO";
 
 export default function CookiePolicyPage() {
   // Animation Variants
@@ -33,6 +34,10 @@ export default function CookiePolicyPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+      <SEO
+        title="Cookie Policy"
+        description="Transparent information about how we use cookies and tracking technologies."
+      />
       <Navbar darkHero={true} />
 
       <main>

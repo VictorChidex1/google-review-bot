@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
+import SEO from "../components/SEO";
+import SEO from "../components/SEO";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -68,6 +70,10 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
+      <SEO
+        title="Contact Us"
+        description="Get in touch with the VeraVox team for support, sales, or partnership inquiries."
+      />
       <Navbar darkHero={true} />
 
       <main>

@@ -6,13 +6,18 @@ import TrustBar from "../components/TrustBar";
 import FeaturesGrid from "../components/FeaturesGrid";
 import PricingSection from "../components/PricingSection";
 import FAQ from "../components/FAQ";
+import SEO from "../components/SEO";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
+    <div className="bg-slate-50 min-h-screen font-sans text-slate-900">
+      <SEO
+        title="Google Review Response Generator"
+        description="Generate professional, empathetic AI responses to Google Reviews in seconds. Boost your local SEO and reputation with VeraVox."
+      />
       <Navbar />
 
-      <main className="flex-grow">
+      <main>
         <HeroSection />
 
         {/* TRUST BAR */}
@@ -21,10 +26,10 @@ export default function LandingPage() {
         {/* FEATURES GRID */}
         <FeaturesGrid />
 
-        {/* PRICING SECTION */}
+        {/* PRICING */}
         <PricingSection />
 
-        {/* FAQ SECTION */}
+        {/* FAQ */}
         <FAQ />
 
         {/* CTA */}

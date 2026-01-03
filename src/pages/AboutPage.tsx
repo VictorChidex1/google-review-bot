@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { motion, type Variants } from "framer-motion";
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
 
 export default function AboutPage() {
   const stats = [
@@ -59,6 +60,10 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
+      <SEO
+        title="About Us"
+        description="Meet the team behind VeraVox. We are on a mission to help small businesses thrive with AI."
+      />
       <Navbar darkHero={true} />
 
       <main>
