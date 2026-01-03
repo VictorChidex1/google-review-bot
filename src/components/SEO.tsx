@@ -12,8 +12,8 @@ export default function SEO({
   title,
   description,
   keywords = "Google Reviews, AI Response Generator, Reputation Management, Small Business Tools, Automated Reviews",
-  image = "/og-image.png", // Default OG Image (we should add one later)
-  url = "https://veravox.ai", // Default URL
+  image = "/veravox-logo.webp", // Default OG Image (we should add one later)
+  url = "https://vevavox-ai.vercel.app/", // Default URL
 }: SEOProps) {
   const siteTitle = "VeraVox AI";
   const fullTitle = `${title} | ${siteTitle}`;
