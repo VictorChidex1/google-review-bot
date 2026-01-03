@@ -3361,3 +3361,88 @@ We didn't just "style" the page. We used:
 4.  **Physics** (Motion).
 
 This is what separates a "Student Project" from a "Commercial Product." 🚀
+
+---
+
+## 29. The Legal Shield (Terms of Service)
+
+You asked for a deep dive into the **Terms of Service** upgrade. This is the most critical document for protecting you (the business owner).
+
+### A. The "Why" (Legal Logic)
+
+We didn't just add random text. We added specific **"Shields"** against common SaaS threats.
+
+#### 1. The "Hallucination" Shield (Clause 4)
+
+**The Risk:** A user generates a reply using your AI. The AI goes rogue and insults the customer. The user sues _you_.
+**The Fix:**
+
+```tsx
+<li>AI models can occasionally generate incorrect or misleading information ("hallucinations").</li>
+<li>You are solely responsible for reviewing...</li>
+```
+
+**Mentor Explanation:**
+
+- **Terminology:** **Indemnification** (Concept).
+- **Logic:** We explicitly verify that the Human is the "Editor in Chief." If they hit publish on a bad review, it is _their_ fault, not the AI's.
+
+#### 2. The "Bot" Shield (Clause 2)
+
+**The Risk:** A competitor writes a script to create 10,000 accounts and crash your database complexity cost.
+**The Fix:**
+
+```tsx
+<li>
+  Accounts registered by "bots" or other automated methods are not permitted.
+</li>
+```
+
+**Logic:** This gives you the legal right to ban those IP addresses instantly without refund.
+
+#### 3. The "California" Rule (Clause 3)
+
+**The Risk:** You charge a customer for Month 2. They claim they didn't know it was a subscription.
+**The Fix:**
+
+```tsx
+<li>
+  Subscriptions automatically renew ... unless cancelled materially before the
+  renewal date.
+</li>
+```
+
+**Logic:** Payment processors (Stripe/LemonSqueezy) _require_ this specific wording to win chargeback disputes.
+
+### B. The Code Logic (Grid vs List)
+
+For the **"Prohibited Conduct"** section, we switched from a `<ul>` list to a CSS Grid.
+
+**The Code:**
+
+```tsx
+<div className="grid sm:grid-cols-2 gap-4">
+  <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
+    <h3 className="font-bold ...">No Reverse Engineering</h3>
+  </div>
+  ...
+</div>
+```
+
+**Mentor Explanation:**
+
+- **Logic:** A long bullet list of "Don'ts" looks like a scolding parent. It's negative.
+- **The Grid:** By turning them into cards, it looks like a "Professional Standard." It feels like a feature comparison table, which is more psychologically pleasing, even though it's telling you what _not_ to do.
+
+### C. The Color Synchronization
+
+You correctly noticed that the Terms page was using **Indigo/Purple**, while the Privacy page used **Blue/Emerald**.
+
+- **Consistency Principle:** In design systems, "Legal" should feel uniform.
+- **The Fix:** You manually updated the gradients to `from-blue-400 to-emerald-400`. Now, the user subconsciously knows "I am in the Legal Section" because the color coding matches perfectly across pages.
+
+### Summary
+
+- **Visuals:** We made it look like a feature page.
+- **Content:** We added specific clauses to protect against AI risks and Payment disputes.
+- **Result:** A binding contract that looks beautiful. 🛡️

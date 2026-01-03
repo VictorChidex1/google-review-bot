@@ -1,6 +1,5 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Link } from "react-router-dom";
 import { motion, type Variants } from "framer-motion";
 import {
   FileCheck,
@@ -8,7 +7,6 @@ import {
   CreditCard,
   Bot,
   Ban,
-  Scale,
   ShieldAlert,
   Gavel,
   ChevronRight,
