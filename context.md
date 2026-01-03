@@ -92,3 +92,51 @@ We are building a **Micro-SaaS** that helps local businesses automatically gener
 - [x] Database connection is configured.
 - [x] **Design System Defined:** Emerald Green + Deep Slate.
 - [ ] **Current Task:** Building the React UI (Forms, Buttons, Display Area).
+
+## 💬 Code Commenting Standards (Strict)
+
+**Goal:** Code should look written by a Senior Engineer, not an AI tutorial.
+
+**1. THE "NO NOISE" RULE:**
+
+- **FORBIDDEN:** Do not explain _what_ the code is doing if the code itself is readable.
+  - _Bad:_ `// Create a new array` -> `const arr = []`
+  - _Bad:_ `// Loop through items` -> `items.map(...)`
+- **REQUIRED:** Only comment on _why_ a specific decision was made, or to explain complex logic that isn't immediately obvious.
+
+**2. EXPLAIN "WHY", NOT "WHAT":**
+
+- _Bad (AI Generic):_ `// Check if user is logged in`
+- _Good (Senior):_ `// Auth check required here to prevent unauthorized API calls on mount.`
+
+**3. SUBTLETY OVER VERBOSITY:**
+
+- Keep comments short, punchy, and on the same line if possible.
+- Use `// TODO:` or `// NOTE:` for architectural flags.
+
+**4. JSDoc GUIDELINES:**
+
+- Only use JSDoc (`/** ... */`) for complex utility functions or API interfaces.
+- Do NOT use JSDoc for standard React components unless the props are highly complex.
+
+**5. EXAMPLE:**
+
+```typescript
+// ❌ BAD (Generic AI):
+// Function to handle the submit button
+// It prevents default behavior and calls the API
+const handleSubmit = (e) => {
+  e.preventDefault();
+  // ...
+};
+
+// ✅ GOOD (Professional):
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  // Guard clause: prevent spam clicking
+  if (loading) return;
+
+  // ...
+};
+```
