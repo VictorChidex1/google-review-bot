@@ -3588,3 +3588,68 @@ We now use the same component in two places, but with different "personalities."
 
 - **Terminology:** **Component Reuse**.
 - **Benefit:** We maintain ONE documentation file. When you update the docs, it updates for both Public visitors and Private users instantly. No copy-pasting required. 🧠
+
+---
+
+## 32. The Invisible Engine (SEO System)
+
+A website without SEO is like a billboard in a basement. We built a dynamic engine to tell Google exactly what each page is about.
+
+### A. The "Single Page" Problem
+
+React is a "Single Page Application" (SPA).
+
+- **The Default:** It has one `index.html`. No matter what page you visit, the Title is always "VeraVox" and the Description is always empty. This is bad for Google.
+- **The Fix:** We used **`react-helmet-async`**. This library allows React to "hijack" the `<head>` of the browser and rewrite it instantly when the user navigates.
+
+### B. The reusable `<SEO />` Component
+
+Instead of writing complex meta tags on every page, we built a simple component.
+
+**The Code:**
+
+```tsx
+export default function SEO({ title, description, image, url }) {
+  const fullTitle = `${title} | VeraVox AI`;
+
+  return (
+    <Helmet>
+      {/* 1. Standard Tags for Google */}
+      <title>{fullTitle}</title>
+      <meta name="description" content={description} />
+
+      {/* 2. Open Graph (Facebook/LinkedIn) */}
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:image" content={image} />
+    </Helmet>
+  );
+}
+```
+
+### C. The "Injection" Strategy
+
+We manually visited every public page and "injected" this component at the top.
+
+**Example (Landing Page):**
+
+```tsx
+<SEO
+  title="Google Review Response Generator"
+  description="Generate professional AI responses..."
+/>
+```
+
+**Example (Contact Page):**
+
+```tsx
+<SEO title="Contact Us" description="Get in touch for support..." />
+```
+
+### Key Terminology
+
+- **Canonical URL:** Tells Google "This is the master copy of the page" to avoid duplicate content penalties.
+- **Open Graph (OG):** The protocol Facebook invented to control how links look when shared. We set the `og:image` to your logo so shares look professional.
+
+### Result
+
+When you share a link to your site on WhatsApp or Twitter, it will now show a beautiful card with the correct title and description, instead of a blank box. 🚀
