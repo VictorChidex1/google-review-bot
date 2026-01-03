@@ -18,17 +18,23 @@ export default function Footer() {
           Contact
         </Link>
         <span>•</span>
-        <a href="#" className="hover:text-emerald-600 transition-colors">
+        <Link
+          to="/privacy"
+          className="hover:text-emerald-600 transition-colors"
+        >
           Privacy Policy
-        </a>
+        </Link>
         <span>•</span>
-        <a href="#" className="hover:text-emerald-600 transition-colors">
+        <Link to="/terms" className="hover:text-emerald-600 transition-colors">
           Terms of Service
-        </a>
+        </Link>
         <span>•</span>
-        <a href="#" className="hover:text-emerald-600 transition-colors">
+        <Link
+          to="/cookies"
+          className="hover:text-emerald-600 transition-colors"
+        >
           Cookie Policy
-        </a>
+        </Link>
       </div>
     </footer>
   );

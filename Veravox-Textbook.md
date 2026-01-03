@@ -3119,3 +3119,31 @@ const slideLeft = {
 | **Keyframes**       | Defining an _array_ of values `[0, 10, 0]` instead of just one end state. The animation cycles through them. |
 | **Parallax**        | An effect where things appear to move at different speeds or from different directions to create depth.      |
 | **Interpolation**   | (Implied) The calculation of intermediate values. E.g., moving from `opacity: 0` to `opacity: 1`.            |
+
+## 26. Safari Mobile Performance Patch (The "Freeze" Fix)
+
+**The Problem:**
+On iPhone (Safari), opening the mobile menu or scrolling the About Page caused the entire app to freeze for 2-3 seconds. This did not happen on Chrome/Desktop.
+
+**The Diagnosis:**
+Safari's rendering engine (WebKit) struggles with **Heavy Compositing** on mobile GPUs. Specifically:
+1.  **Backdrop Filters ()**: This forces the GPU to "read" the pixels behind an element, apply a math formula (blur), and paint them back. When animating a large element (like a full-screen menu) with this filter, it kills the frame rate.
+2.  **Large Transparent Gradients**: We had massive, full-screen radial gradients animated with . Safari tries to "composite" (layer) these transparent pixels on top of each other, leading to a memory bottleneck.
+
+**The Fix (The "Safari Patch"):**
+We used **Conditional Rendering based on Screen Size**.
+
+### 1. The Navbar Patch
+*   **Before:** `backdrop-blur-md` (Applied everywhere).
+*   **After:** `md:backdrop-blur-md` (Applied ONLY on Medium screens and up).
+*   **Why?** On mobile, we sacrifice the "frosted glass" look for "instant performance". A solid or opaque background is faster to render than a blurred one.
+
+### 2. The Background Patch
+*   **Before:** We rendered the `motion.div` blobs on all screens.
+*   **After:** We added `hidden md:block`.
+*   **Logic:**
+    *   **Mobile ()**: The heavy background effects simply do not exist in the DOM. The CPU has nothing to calculate.
+    *   **Desktop ()**: The effects appear as normal because desktop GPUs can handle the load.
+
+**Key Takeaway:**
+When building for mobile web, **Paint Costs Matter**. Effects that look trivial on a MacBook Pro (like  or ) can bring an iPhone to its knees if they cover a large area of the screen.

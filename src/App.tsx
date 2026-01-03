@@ -12,6 +12,9 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import AdminPage from "./pages/AdminPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import TermsOfServicePage from "./pages/TermsOfServicePage";
+import CookiePolicyPage from "./pages/CookiePolicyPage";
 
 // Dashboard Layout & Pages
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -36,6 +39,9 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms" element={<TermsOfServicePage />} />
+        <Route path="/cookies" element={<CookiePolicyPage />} />
 
         {/* Admin Route (Standalone for now) */}
         <Route path="/admin" element={<AdminPage />} />
