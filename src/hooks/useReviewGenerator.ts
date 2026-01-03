@@ -6,6 +6,7 @@ import type { ReviewResponse } from "../types";
 export function useReviewGenerator() {
   const [reviewText, setReviewText] = useState("");
   const [businessType, setBusinessType] = useState("Restaurant");
+  const [tone, setTone] = useState("Professional");
   const [generatedReply, setGeneratedReply] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -29,6 +30,7 @@ export function useReviewGenerator() {
         body: JSON.stringify({
           reviewText,
           businessType,
+          tone,
           userId: auth.currentUser?.uid, // Send User ID for rate limiting
         }),
       });
@@ -47,6 +49,7 @@ export function useReviewGenerator() {
           userId: auth.currentUser?.uid,
           originalReview: reviewText,
           businessType,
+          tone,
           generatedReply: data.reply,
           createdAt: new Date(),
         });
@@ -67,6 +70,8 @@ export function useReviewGenerator() {
     setReviewText,
     businessType,
     setBusinessType,
+    tone,
+    setTone,
     generatedReply,
     loading,
     error,

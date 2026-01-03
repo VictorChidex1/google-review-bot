@@ -67,7 +67,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    const { reviewText, businessType, userId } = req.body || {};
+    const {
+      reviewText,
+      businessType,
+      tone = "Professional",
+      userId,
+    } = req.body || {};
 
     if (!reviewText || !businessType) {
       return res
@@ -148,12 +153,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
+    // 4. Construct Prompt based on Tone
+    const toneInstructions = {
+      Professional: "Write a polished, concise, and business-like reply.",
+      Friendly:
+        "Write a warm, casual, and enthusiastic reply with a personal touch.",
+      Empathetic:
+        "Write a deeply caring, understanding, and apologetic reply (if needed). Focus on their feelings.",
+    };
+
+    const selectedInstruction =
+      toneInstructions[tone as keyof typeof toneInstructions] ||
+      toneInstructions["Professional"];
+
     const prompt = `
       You are the owner of a ${businessType}. 
-      Write a warm, professional, short reply to this customer review.
+      ${selectedInstruction}
       
       RULES:
-      - Be polite but not robotic.
+      - Be polite.
       - Do not use "Dear Valued Customer".
       - Keep it under 50 words.
       - If they are angry, apologize and ask them to email support.

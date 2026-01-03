@@ -1,8 +1,12 @@
+import { Briefcase, Smile, HeartHandshake } from "lucide-react";
+
 interface ReviewFormProps {
   reviewText: string;
   setReviewText: (text: string) => void;
   businessType: string;
   setBusinessType: (type: string) => void;
+  tone: string;
+  setTone: (tone: string) => void;
   onSubmit: () => void;
   loading: boolean;
   error: string;
@@ -13,10 +17,33 @@ export default function ReviewForm({
   setReviewText,
   businessType,
   setBusinessType,
+  tone,
+  setTone,
   onSubmit,
   loading,
   error,
 }: ReviewFormProps) {
+  const tones = [
+    {
+      id: "Professional",
+      label: "Professional",
+      icon: Briefcase,
+      color: "bg-blue-100 text-blue-700 border-blue-200",
+    },
+    {
+      id: "Friendly",
+      label: "Friendly",
+      icon: Smile,
+      color: "bg-amber-100 text-amber-700 border-amber-200",
+    },
+    {
+      id: "Empathetic",
+      label: "Empathetic",
+      icon: HeartHandshake,
+      color: "bg-rose-100 text-rose-700 border-rose-200",
+    },
+  ];
+
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8 border border-slate-200">
       <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
@@ -27,7 +54,37 @@ export default function ReviewForm({
       </h2>
 
       <div className="space-y-6">
+        {/* Tone Selector */}
         <div>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Select Tone
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {tones.map((t) => {
+              const Icon = t.icon;
+              const isSelected = tone === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setTone(t.id)}
+                  className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl border transition-all duration-200 ${
+                    isSelected
+                      ? `${t.color} border-current ring-2 ring-offset-1 ring-emerald-500/20 shadow-sm`
+                      : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100"
+                  }`}
+                >
+                  <Icon
+                    className={`w-5 h-5 mb-1 ${isSelected ? "" : "opacity-50"}`}
+                  />
+                  <span className="text-xs font-bold">{t.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          {/* Business Type */}
           <label className="block text-sm font-semibold text-slate-700 mb-2">
             Business Type
           </label>
@@ -94,10 +151,9 @@ export default function ReviewForm({
               Generating Reply...
             </span>
           ) : (
-            "Generate Professional Reply"
+            `Generate ${tone} Reply`
           )}
         </button>
-
         {error && (
           <div className="p-4 bg-red-50 text-red-600 rounded-lg text-sm text-center font-medium border border-red-100">
             {error}

@@ -15,6 +15,8 @@ export default function GeneratorPage() {
     setReviewText,
     businessType,
     setBusinessType,
+    tone,
+    setTone,
     generatedReply,
     loading,
     error,
@@ -41,6 +43,8 @@ export default function GeneratorPage() {
             setReviewText={setReviewText}
             businessType={businessType}
             setBusinessType={setBusinessType}
+            tone={tone}
+            setTone={setTone}
             onSubmit={generateReply}
             loading={loading}
             error={error}
