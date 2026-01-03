@@ -16,7 +16,6 @@ import {
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import SEO from "../components/SEO";
-import SEO from "../components/SEO";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
