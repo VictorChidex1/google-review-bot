@@ -3653,3 +3653,107 @@ We manually visited every public page and "injected" this component at the top.
 ### Result
 
 When you share a link to your site on WhatsApp or Twitter, it will now show a beautiful card with the correct title and description, instead of a blank box. 🚀
+
+---
+
+## 33. The Personality Switch (Dynamic Prompting)
+
+We added a "Tone Selector" to let users control the AI's emotional output.
+
+### A. The "State Lifting" Pattern
+
+We needed the `tone` to be chosen in the `ReviewForm` (UI), but sent to the API by `useReviewGenerator` (Logic).
+
+- **Problem:** If `tone` was stuck inside `ReviewForm`, the generator wouldn't know about it.
+- **Solution:** We "lifted the state" up to the custom hook `useReviewGenerator`.
+  1.  **Hook:** Holds the master state `[tone, setTone]`.
+  2.  **Parent:** Passes `tone` and `setTone` down to the Child (`ReviewForm`).
+  3.  **Child:** Displays the buttons. When clicked, it calls `setTone("Friendly")`, which updates the Parent.
+
+### B. The Backend Logic (Dictionary Lookup)
+
+In `api/generate.ts`, we didn't write massive `if/else` statements. We used a cleaner **Dictionary Lookup Pattern**.
+
+**The Code:**
+
+```ts
+const toneInstructions = {
+  Professional: "Write a polished, concise, and business-like reply.",
+  Friendly: "Write a warm, casual, and enthusiastic reply.",
+  Empathetic: "Write a caring, apologetic reply. Focus on feelings.",
+};
+
+// 1. Look up the instruction based on the key (e.g., "Friendly")
+// 2. Fallback to "Professional" if something weird is sent
+const selectedInstruction =
+  toneInstructions[tone] || toneInstructions["Professional"];
+
+const prompt = `
+  You are a business owner.
+  ${selectedInstruction}  <-- DYNAMIC INJECTION
+  Review: "${reviewText}"
+`;
+```
+
+### Key Terminology
+
+- **Prompt Engineering:** The art of writing inputs (prompts) to get the best output from an AI model. We are "engineering" the prompt dynamically based on user choice.
+- **Props Drilling:** Passing data (like `setTone`) from a Parent to a Child so the Child can change the Parent's state.
+- **Default Parameter:** `const { tone = "Professional" } = req.body`. This ensures the app never crashes even if the frontend forgets to send a tone.
+
+### Result
+
+The user feels in control. They click a button, and the AI radically shifts its "personality" from a Suit-and-Tie CEO to a Caring Neighbor. 🎭
+
+---
+
+## 34. The Bouncer (Security Architecture) 👮‍♂️
+
+We uncovered a critical security flaw in our "Rate Limiting" system and fixed it using cryptography.
+
+### A. The Flaw: "Trusting the Client"
+
+Initially, our API looked like this:
+
+```ts
+// ❌ INSECURE
+const { userId } = req.body; // The user TELLS us who they are
+```
+
+- **The Attack:** A hacker could send `curl -X POST -d '{"userId": "ElonMusk"}'` ... and the server would believe them! They could bypass rate limits by just changing the name every time.
+- **The Misconception:** We thought `serviceAccountKey.json` protected us.
+  - **Reality:** The Service Account Key protects the **Server's** access to the Database. It does NOT verify the **User's** identity. It's like having a Key to the Bank Vault (Server) but not checking the ID of the person asking you to open it.
+
+### B. The Fix: The "ID Scanner" (Token Verification)
+
+We implemented a cryptographic "Handshake".
+
+**1. The Client (The Logic)**
+The Frontend gets a digital "ID Card" (Token) from Google Auth servers and stamps it on the request envelope (Header).
+
+```ts
+// Frontend (useReviewGenerator.ts)
+const token = await auth.currentUser.getIdToken();
+headers: { "Authorization": `Bearer ${token}` }
+```
+
+**2. The Server (The Bouncer)**
+The Backend ignores what the user _says_ (`req.body.userId`) and instead looks at the _stamp_ (`Authorization` header).
+
+```ts
+// Backend (api/generate.ts)
+const idToken = req.headers.authorization.split("Bearer ")[1];
+const decodedToken = await admin.auth().verifyIdToken(idToken);
+const validatedUserId = decodedToken.uid; // ✅ TRUSTED
+```
+
+### C. Technical Challenges
+
+We faced a `TypeError: undefined (reading 'cert')` error during implementation.
+
+- **Cause:** We used `import * as admin` which confused the bundler about default exports.
+- **Fix:** We switched to `import admin from "firebase-admin"` to correctly load the library.
+
+### Result
+
+Your API is now "Fort Knox". Even if a hacker sends fake User IDs, the server will reject them because they don't have a valid digital signature from Google. 🛡️

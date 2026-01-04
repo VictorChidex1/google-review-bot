@@ -22,16 +22,24 @@ export function useReviewGenerator() {
     setGeneratedReply("");
 
     try {
+      // 1. Get the ID Token (The "ID Card")
+      const token = auth.currentUser
+        ? await auth.currentUser.getIdToken()
+        : null;
+
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          // 2. Show the ID Card to the Bouncer
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
           reviewText,
           businessType,
           tone,
-          userId: auth.currentUser?.uid, // Send User ID for rate limiting
+          // We still send userId for legacy/fallback, but backend will prefer token
+          userId: auth.currentUser?.uid,
         }),
       });
 
@@ -42,12 +50,13 @@ export function useReviewGenerator() {
 
       const data: ReviewResponse = await response.json();
       setGeneratedReply(data.reply);
+      setReviewText(""); // ✅ Clear input after success
 
       // Save to Firestore
       try {
         await addDoc(collection(db, "history"), {
           userId: auth.currentUser?.uid,
-          originalReview: reviewText,
+          originalReview: reviewText, // Use the captured value, not state
           businessType,
           tone,
           generatedReply: data.reply,

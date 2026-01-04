@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import dotenv from "dotenv";
-import * as admin from "firebase-admin";
+import admin from "firebase-admin";
 import path from "path";
 import fs from "fs";
 
@@ -11,6 +11,7 @@ dotenv.config({ path: ".env.local" });
 // Initialize Firebase Admin (Singleton)
 function getAdminAuth() {
   if (!admin.apps?.length) {
+    console.log("Initializing Firebase Admin...");
     try {
       // 1. Try to load from local file (Local Development)
       const serviceAccountPath = path.join(
@@ -19,6 +20,7 @@ function getAdminAuth() {
       );
 
       if (fs.existsSync(serviceAccountPath)) {
+        console.log("Found serviceAccountKey.json locally.");
         const serviceAccount = JSON.parse(
           fs.readFileSync(serviceAccountPath, "utf8")
         );
@@ -27,7 +29,7 @@ function getAdminAuth() {
         });
       } else {
         // 2. Production: Use Environment Variables (Recommended for Vercel)
-        // You would typically set FIREBASE_SERVICE_ACCOUNT_KEY env var with the JSON string
+        console.log("Checking FIREBASE_SERVICE_ACCOUNT_KEY env var...");
         const serviceAccountEnv = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
         if (serviceAccountEnv) {
           admin.initializeApp({
@@ -35,9 +37,8 @@ function getAdminAuth() {
           });
         } else {
           console.error(
-            "Missing serviceAccountKey.json AND FIREBASE_SERVICE_ACCOUNT_KEY env var"
+            "CRITICAL: Missing serviceAccountKey.json AND FIREBASE_SERVICE_ACCOUNT_KEY env var"
           );
-          // Fallback for build phase or incomplete setup
           return null;
         }
       }
@@ -45,6 +46,8 @@ function getAdminAuth() {
       console.error("Firebase Admin Init Error:", error);
       return null;
     }
+  } else {
+    // console.log("Firebase Admin already initialized.");
   }
   return admin.firestore();
 }
@@ -80,11 +83,44 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .json({ error: "Missing reviewText or businessType" });
     }
 
-    // --- RATE LIMITING LOGIC (ADMIN SDK) ---
-    if (userId) {
+    // --- SECURITY & RATE LIMITING LOGIC (The "Bouncer") ---
+    let validatedUserId = userId; // Default to body (unsafe) for backward compat, or null
+
+    // 1. Try to verify the ID Token (The secure way)
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const idToken = authHeader.split("Bearer ")[1];
+      try {
+        const db = getAdminAuth(); // Determine admin app
+        // We need the Auth service, not just Firestore.
+        // Note: getAdminAuth() currently returns firestore(). We need to fix that helper or access auth() differently.
+        // Let's assume standard admin.auth() is available if initialized.
+
+        if (admin.apps.length) {
+          const decodedToken = await admin.auth().verifyIdToken(idToken);
+          validatedUserId = decodedToken.uid; // ✅ TRUSTED IDENTITY
+        } else {
+          console.error("Firebase Admin not initialized, cannot verify token.");
+          // Fail open or closed? If config is broken, better to fail closed for security, or open for dev?
+          // Let's fail with specific error
+          return res.status(500).json({
+            error: "Server Configuration Error: Admin SDK not initialized.",
+          });
+        }
+      } catch (e: any) {
+        console.error("Token Verification Failed:", e.message);
+        return res.status(401).json({
+          error:
+            "Invalid or expired session. Please login again. Details: " +
+            e.message,
+        });
+      }
+    }
+
+    if (validatedUserId) {
       const db = getAdminAuth();
       if (db) {
-        const userRef = db.collection("user_limits").doc(userId);
+        const userRef = db.collection("user_limits").doc(validatedUserId);
         const userDoc = await userRef.get();
 
         const now = new Date();
@@ -119,7 +155,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // Check Admin Status (Securely)
         try {
-          const userProfileDoc = await db.collection("users").doc(userId).get();
+          const userProfileDoc = await db
+            .collection("users")
+            .doc(validatedUserId)
+            .get();
           const isAdmin =
             userProfileDoc.exists && userProfileDoc.data()?.isAdmin === true;
 
@@ -142,8 +181,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           }
         } catch (e) {
           console.error("Admin Check/Write Error", e);
-          // Proceed if admin check fails? Better to fail open or closed?
-          // For now, fail open for user experience but log error.
         }
       }
     }
@@ -171,7 +208,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ${selectedInstruction}
       
       RULES:
-      - Be polite.
+      - Be polite but not robotic.
       - Do not use "Dear Valued Customer".
       - Keep it under 50 words.
       - If they are angry, apologize and ask them to email support.
